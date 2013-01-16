@@ -37,27 +37,27 @@ string get_self_real_name (string? alternative_name) {
     //returns null if fails
     string self_real_name = null;
     //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
-    try { self_real_name = FileUtils.read_link ("/proc/self/exe"); //Linux
-    } catch (FileError e) {
-        try { self_real_name = FileUtils.read_link ("/proc/curproc/exe"); //NetBSD
-        } catch (FileError e) { 
-            try { self_real_name = FileUtils.read_link ("/proc/curproc/file"); //DragonflyBSD
-            } catch (FileError e) {
+    try { self_real_name = FileUtils.read_link ("/proc/self/exe"); } //Linux
+    catch (FileError e) {
+        try { self_real_name = FileUtils.read_link ("/proc/curproc/exe"); } //NetBSD
+        catch (FileError e) { 
+            try { self_real_name = FileUtils.read_link ("/proc/curproc/file"); } //DragonflyBSD
+            catch (FileError e) {
                 //damn incompatible implementations!
                 warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by Debian alternatives system.");
                 //if we got invoked, the relevant alternative should point to us!
                 if (alternative_name != null) {
                     if (alternative_exists (alternative_name)) {
-                        try { self_real_name = FileUtils.read_link ("/etc/alternatives/" + alternative_name);
-                        } catch (FileError e) {
+                        try { self_real_name = FileUtils.read_link ("/etc/alternatives/" + alternative_name); }
+                        catch (FileError e) {
                         critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" alternative is misconfigured: either it's a dangling symbolic link, either it's not a symbolic link at all, or I don't have permissions to read it. Please report a bug to your distribution maintainers.", alternative_name);
                         }
                     } else {
                         critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" is not registered in Debian alternatives system. I'm not supposed to be invoked this way. Please report a bug to your distribution maintainers.", alternative_name);
-                        //and don't you dare to to loop readlink over args[0] as a fallback!
                     }
                 } else {
-                    critical ("Couldn't determine full path to self using procfs and skipping determining it by alternatives system because no alternative name was given. You might want to report  a bug to developers of this tool.");
+                    critical ("Couldn't determine full path to self using procfs and skipping determining it by alternatives system because no alternative name was given. You might want to report a bug to developers of this tool.");
+                    //and don't you dare to to loop readlink over args[0] as a fallback!
                 }
             }
         }
@@ -72,18 +72,14 @@ string get_executable_for_alternative (string alternative_name) {
         const string URI_SCHEME = "http";
         debug ("Looking up the user preference for \"www-browser\" alternative");
         desired_executable = AppInfo.get_default_for_uri_scheme (URI_SCHEME).get_executable ();
-        if (desired_executable != null) {
-            debug("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable );
-        } else {
+        if (desired_executable != null) { debug("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
+        else {
             //TODO: fall back to previous item in alternatives first!
             warning ("Couldn't determine user-preferred application for \"www-browser\" alternative, falling back to guesswork");
             string[] all_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "rekonq", "epiphany-browser", "epiphany", "opera", "luakit", "konqueror", "arora" };
             string[] gnome_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "epiphany-browser", "epiphany", "opera", "luakit" };
-            if ("gnome" in alternative_name) {
-                desired_executable = get_path_to_some_existing_executable (gnome_browsers);
-            } else {
-                desired_executable = get_path_to_some_existing_executable (all_browsers);
-            }
+            if ("gnome" in alternative_name) { desired_executable = get_path_to_some_existing_executable (gnome_browsers); }
+            else { desired_executable = get_path_to_some_existing_executable (all_browsers); }
         }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
@@ -116,9 +112,8 @@ int main (string[] args) {
     string[] executable_with_args = args;
     executable_with_args[0] = desired_executable; //replace our executable path with the one we will launch
 
-    try {
-        Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null);
-    } catch (SpawnError e) {
+    try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
+    catch (SpawnError e) {
         stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative, e.message);
     }
 
