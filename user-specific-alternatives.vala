@@ -3,12 +3,11 @@
 // $ valac --pkg granite --pkg gio-2.0 app-by-mime.vala
 
 void usage () {
-    stderr.printf ("This is a wrapper that allows Debian alternatives system to launch the application preferred by a specific user instead of a system-wide and often implicit default, e.g. for \"x-www-browser\" alternative. Launching it directly is pointless.
+    stderr.printf ("Usage: you're not supposed to run this.
 
-This wrapper passes all parameters it receives as well as stdin to the user-preferred application, so launching it should be equivalent to launching the user-preferred application directly, except this wrapper exits as soon as it spawns the target app and DOES NOT wait until it finishes and returns an exit code.
+This is a wrapper that allows Debian alternatives system to launch the application preferred by a specific user instead of a system-wide and often implicit default, e.g. for \"x-www-browser\" alternative. It passes all parameters it receives as well as stdin to the user-preferred application, so launching it should be equivalent to launching the user-preferred application directly, except this wrapper exits as soon as it spawns the target app and DOES NOT wait until it finishes and returns an exit code.
 
 To make this wrapper handle an alternative it already supports, simply register it for that alternative using update-alternatives.
-
 Alternative detection is often generalized, e.g. everything containing \"www-browser\" is considered to be a GUI text editor.
 To avoid \"www-browser\" launching GUI browser even when a console browser is desired, simply do not install the wrapper for that alternative.
 
