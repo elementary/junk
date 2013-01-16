@@ -14,9 +14,42 @@ To avoid \"www-browser\" launching GUI browser even when a console browser is de
 To expand the list of supported alternatives you'll have to add a custom handler of that alternative to the code of this wrapper.\n");
 }
 
-bool is_valid_alternative (string alternative_name) {
+bool alternative_exists (string alternative_name) {
     //doesn't do any real validity checks, just checks if it exists
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
+}
+
+string get_self_real_name (string? alternative_name) {
+    //the name of alternative will be used if looking up by procfs fails
+    //returns null if fails that too
+    string self_real_name = "";
+    //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
+    try { self_real_name = FileUtils.read_link ("/proc/self/exe"); //Linux
+    } catch (FileError e) {
+        try { self_real_name = FileUtils.read_link ("/proc/curproc/exe"); //NetBSD
+        } catch (FileError e) { 
+            try { self_real_name = FileUtils.read_link ("/proc/curproc/file"); //DragonflyBSD
+            } catch (FileError e) {
+                //damn incompatible implementations!
+                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by Debian alternatives system.");
+                //if we got invoked, the relevant alternative should point to us!
+                if (alternative_name != null) {
+                    if (alternative_exists (alternative_name)) {
+                        try { self_real_name = FileUtils.read_link ("/etc/alternatives/" + alternative_name);
+                        } catch (FileError e) {
+                        critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" alternative is misconfigured: either it's a dangling symbolic link, either it's not a symbolic link at all, or I don't have permissions to read it. Please report a bug to your distribution maintainers.", alternative_name);
+                        }
+                    } else {
+                        critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" is not registered in Debian alternatives system. I'm not supposed to be invoked this way. Please report a bug to your distribution maintainers.", alternative_name);
+                        //and don't you dare to to loop readlink over args[0] as a fallback!
+                    }
+                } else {
+                    critical ("Couldn't determine full path to self using procfs and skipping determining it by alternatives system because no alternative name was given. You might want to report  a bug to developers of this tool.");
+                }
+            }
+        }
+    }
+    return self_real_name;
 }
 
 string get_executable_for_alternative (string alternative_name) {
@@ -31,7 +64,7 @@ string get_executable_for_alternative (string alternative_name) {
         debug("Looking up the user preference for \"text-editor\" alternative");
         desired_executable = AppInfo.get_default_for_type (MIMETYPE, false).get_executable ();
         debug("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable );
-    } else if (is_valid_alternative (alternative_name)) {
+    } else if (alternative_exists (alternative_name)) {
         critical ("The alternative \"%s\" is not known to me. Contact your distribution maintainers about this issue.", alternative_name);
         Process.exit (1); //TODO: fall back to next item in alternatives system, convert the above to a warning
     } else {
@@ -44,18 +77,24 @@ string get_executable_for_alternative (string alternative_name) {
 
 int main (string[] args) {
 
-    Granite.Services.Logger.initialize ("user-specific-alternatives");
+    Environment.set_prgname ("user-specific-alternatives");
+    Granite.Services.Logger.initialize (Environment.get_prgname ());
     Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG;
 
     string self_filename = Path.get_basename (args[0]);
-    debug ("Assuming \"%s\" to be the name by which our executable was called", self_filename);
+    debug ("Assuming the name by which our executable was called, \"%s\", to be the name of alternative we're working with", self_filename);
+    string alternative = self_filename;
 
-    string desired_executable = get_executable_for_alternative (self_filename);
+    string desired_executable = get_executable_for_alternative (alternative);
 
     string[] executable_with_args = args;
     executable_with_args[0] = desired_executable; //replace our executable path with the one we will launch
 
-    Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null);
+    try {
+        Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null);
+    } catch (SpawnError e) {
+        stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative, e.message);
+    }
 
     return 0;
 }
