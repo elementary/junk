@@ -19,6 +19,7 @@ bool alternative_exists (string alternative_name) {
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
 }
 
+//FIXME: over-engineering; get rid of it
 string get_path_to_some_existing_executable (string[] executable_list) {
     //returns null if none exist or none are executable by us
     string path_to_executable = null;
@@ -72,9 +73,9 @@ string get_executable_for_alternative (string alternative_name) {
         const string URI_SCHEME = "http";
         debug ("Looking up the user preference for \"www-browser\" alternative");
         desired_executable = AppInfo.get_default_for_uri_scheme (URI_SCHEME).get_executable ();
-        if (desired_executable != null) { debug("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
+        if (desired_executable != null) { debug ("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
         else {
-            //TODO: fall back to previous item in alternatives first!
+            //TODO: fall back to previous item in alternatives instead!
             warning ("Couldn't determine user-preferred application for \"www-browser\" alternative, falling back to guesswork");
             string[] all_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "rekonq", "epiphany-browser", "epiphany", "opera", "luakit", "konqueror", "arora" };
             string[] gnome_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "epiphany-browser", "epiphany", "opera", "luakit" };
