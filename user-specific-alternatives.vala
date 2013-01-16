@@ -19,9 +19,21 @@ bool alternative_exists (string alternative_name) {
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
 }
 
+string get_path_to_some_existing_executable (string[] executable_list) {
+    //returns null if none exist or none are executable by us
+    foreach (string executable in executable_list) {
+        path_to_executable = Environment.find_program_in_path (executable);
+        if (path_to_executable != null) {
+            debug ("Guessed the path to executable to be \"%s\"", desired_executable);
+            break;
+        }
+    }
+    return path_to_executable;
+}
+
 string get_self_real_name (string? alternative_name) {
     //the name of alternative will be used if looking up by procfs fails
-    //returns null if fails that too
+    //returns null if fails
     string self_real_name = null;
     //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
     try { self_real_name = FileUtils.read_link ("/proc/self/exe"); //Linux
@@ -66,18 +78,10 @@ string get_executable_for_alternative (string alternative_name) {
             warning ("Couldn't determine user-preferred application for \"www-browser\" alternative, falling back to guesswork");
             string[] all_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "rekonq", "epiphany-browser", "epiphany", "opera", "luakit", "konqueror", "arora" };
             string[] gnome_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "epiphany-browser", "epiphany", "opera", "luakit" };
-            string[] browser_list;
             if ("gnome" in alternative_name) {
-                browser_list = gnome_browsers;
+                desired_executable = get_path_to_some_existing_executable (gnome_browsers);
             } else {
-                browser_list = all_browsers;
-            }
-            foreach (string executable in browser_list) {
-                desired_executable = Environment.find_program_in_path (executable);
-                if (desired_executable != null) {
-                    debug ("Guessed the path to web browser executable to be \"%s\"", desired_executable);
-                    break;
-                }
+                desired_executable = get_path_to_some_existing_executable (all_browsers);
             }
         }
     } else if ("text-editor" in alternative_name) {
