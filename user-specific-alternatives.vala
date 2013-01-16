@@ -21,10 +21,11 @@ bool alternative_exists (string alternative_name) {
 
 string get_path_to_some_existing_executable (string[] executable_list) {
     //returns null if none exist or none are executable by us
+    string path_to_executable = null;
     foreach (string executable in executable_list) {
         path_to_executable = Environment.find_program_in_path (executable);
         if (path_to_executable != null) {
-            debug ("Guessed the path to executable to be \"%s\"", desired_executable);
+            debug ("Guessed the path to executable to be \"%s\"", path_to_executable);
             break;
         }
     }
