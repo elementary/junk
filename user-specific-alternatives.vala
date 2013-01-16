@@ -22,7 +22,7 @@ bool alternative_exists (string alternative_name) {
 string get_self_real_name (string? alternative_name) {
     //the name of alternative will be used if looking up by procfs fails
     //returns null if fails that too
-    string self_real_name = "";
+    string self_real_name = null;
     //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
     try { self_real_name = FileUtils.read_link ("/proc/self/exe"); //Linux
     } catch (FileError e) {
@@ -53,17 +53,38 @@ string get_self_real_name (string? alternative_name) {
 }
 
 string get_executable_for_alternative (string alternative_name) {
-    string desired_executable = "";
+    //returns null if fails
+    string desired_executable = null;
     if ("www-browser" in alternative_name) {
         const string URI_SCHEME = "http";
-        debug("Looking up the user preference for \"www-browser\" alternative");
+        debug ("Looking up the user preference for \"www-browser\" alternative");
         desired_executable = AppInfo.get_default_for_uri_scheme (URI_SCHEME).get_executable ();
-        debug("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable );
+        if (desired_executable != null) {
+            debug("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable );
+        } else {
+            //TODO: fall back to previous item in alternatives first!
+            warning ("Couldn't determine user-preferred application for \"www-browser\" alternative, falling back to guesswork");
+            string[] all_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "rekonq", "epiphany-browser", "epiphany", "opera", "luakit", "konqueror", "arora" };
+            string[] gnome_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "epiphany-browser", "epiphany", "opera", "luakit" };
+            string[] browser_list;
+            if ("gnome" in alternative_name) {
+                browser_list = gnome_browsers;
+            } else {
+                browser_list = all_browsers;
+            }
+            foreach (string executable in browser_list) {
+                desired_executable = Environment.find_program_in_path (executable);
+                if (desired_executable != null) {
+                    debug ("Guessed the path to web browser executable to be \"%s\"", desired_executable);
+                    break;
+                }
+            }
+        }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
-        debug("Looking up the user preference for \"text-editor\" alternative");
+        debug ("Looking up the user preference for \"text-editor\" alternative");
         desired_executable = AppInfo.get_default_for_type (MIMETYPE, false).get_executable ();
-        debug("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable );
+        debug ("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable );
     } else if (alternative_exists (alternative_name)) {
         critical ("The alternative \"%s\" is not known to me. Contact your distribution maintainers about this issue.", alternative_name);
         Process.exit (1); //TODO: fall back to next item in alternatives system, convert the above to a warning
