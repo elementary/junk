@@ -144,9 +144,8 @@ int main (string[] args) {
     } catch (FileError e) {
         alternative_name = Path.get_basename (args[0]);
         warning ("Couldn't get the alternative path by following invocation symlink. Are you sure I'm installed and selected in alternatives sytem?");
-        debug ("Assuming \"%s\" to be the name of the alternative.", alternative_name);
     }
-    debug ("The alternative name is \"%s\"", alternative_name);
+    debug ("The name of alternative in question is assumed to be \"%s\"", alternative_name);
 
     string desired_executable = get_executable_for_alternative (alternative_name);
     string[] executable_with_args = args;
