@@ -52,6 +52,47 @@ string get_self_real_name (string? alternative_name) {
     return self_real_name;
 }
 
+string get_fallback_alternative (string alternative_name) {
+    //returns null if fails
+    string best_alternative_path = null;
+    int highest_priority = 0;
+    debug ("Determining fallback alternative for \"%s\"", alternative_name);
+    string[] command = { "update-alternatives", "--query", alternative_name, "--quiet" };
+    int stdout_descriptor;
+    try {
+        Process.spawn_async_with_pipes (null, command, null, SpawnFlags.SEARCH_PATH, null, null, null, out stdout_descriptor, null);
+        var stream = FileStream.fdopen (stdout_descriptor, "r");
+        assert (stream != null);
+        string self_real_name = get_self_real_name (alternative_name);
+        if (self_real_name != null) {
+            while (! stream.eof ()) {
+                string line = stream.read_line ();
+                const string alternative_prefix = "Alternative: ";
+                if (line != null && line.has_prefix (alternative_prefix)) {
+                    string alternative_path;
+                    alternative_path = line.substring ( alternative_prefix.length, -1);
+                    debug ("Found alternative path \"%s\";", alternative_path);
+                    int priority;
+                    stream.scanf ("Priority: %d", out priority);
+                    debug ("its priority is \"%d\".", priority);
+                    if (best_alternative_path == null || priority > highest_priority) {
+                        debug ("It's the best alternative path found so far.");
+                        assert (alternative_path != null);
+                        best_alternative_path = alternative_path;
+                        highest_priority = priority;
+                    }
+                }
+            }
+        } else {
+            critical ("Cannot determine fallback for alternative \"%s\" because path to self could not be determined.", alternative_name);
+        }
+    } catch (SpawnError e) {
+        critical ("Cannot determine fallback for alternative \"%s\" because an error occurred during update-alternatives invocation. The error was: %s", alternative_name, e.message);
+    }
+    FileUtils.close (stdout_descriptor); //ignores errors
+    return best_alternative_path;
+}
+
 string get_executable_for_alternative (string alternative_name) {
     //returns null if fails
     string desired_executable = null;
@@ -99,6 +140,9 @@ int main (string[] args) {
     catch (SpawnError e) {
         stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative, e.message);
     }
+
+    //debug for alternatives fallback
+    debug ("The next item in alternatives is \"%s\", will fall back to it in case of failure", get_fallback_alternative(alternative));
 
     return 0;
 }
