@@ -1,6 +1,11 @@
 // -*- Mode: vala; indent-tabs-mode: nil; tab-width: 4 -*-
 
-// $ valac --pkg granite --pkg gio-2.0 app-by-mime.vala
+// $ valac --pkg granite app-by-mime.vala
+
+// This code inherits update-alternatives terminology that may be not obvious
+// It's recommented to read TERMINOLOGY in "man update-alternatives" before hacking
+
+string real_path_to_self = null; //TODO: replace it with the path as seen in the alternatives system, possibly make it local
 
 void usage () {
     stderr.printf ("Usage: you're not supposed to run this.
@@ -19,40 +24,38 @@ bool alternative_exists (string alternative_name) {
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
 }
 
-string get_self_real_name (string? alternative_name) {
-    //the name of alternative will be used if looking up by procfs fails
-    //returns null if fails
-    string self_real_name = null;
+void set_real_path_to_self (string? invocation_path) {
+    //sets global variable real_path_to_self
+    //sets it to null if fails
     //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
-    try { self_real_name = FileUtils.read_link ("/proc/self/exe"); } //Linux
+    try { real_path_to_self = FileUtils.read_link ("/proc/self/exe"); } //Linux
     catch (FileError e) {
-        try { self_real_name = FileUtils.read_link ("/proc/curproc/exe"); } //NetBSD
+        try { real_path_to_self = FileUtils.read_link ("/proc/curproc/exe"); } //NetBSD
         catch (FileError e) { 
-            try { self_real_name = FileUtils.read_link ("/proc/curproc/file"); } //DragonflyBSD
+            try { real_path_to_self = FileUtils.read_link ("/proc/curproc/file"); } //DragonflyBSD
             catch (FileError e) {
                 //damn incompatible implementations!
-                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by Debian alternatives system; the result will be incorrect if this wrapper is not installed for that alternative!");
-                //if we got invoked, the relevant alternative should point to us!
-                if (alternative_name != null) {
-                    if (alternative_exists (alternative_name)) {
-                        try { self_real_name = FileUtils.read_link ("/etc/alternatives/" + alternative_name); }
+                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by invocation.");
+                if (invocation_path != null) {
+                    //FIXME: loop readlink over args[0] as a fallback because determine the alternative that way anyway
+/*                    if (alternative_exists (alternative_name)) {
+                        try { real_path_to_self = FileUtils.read_link ("/etc/alternatives/" + alternative_name); }
                         catch (FileError e) {
                         critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" alternative is misconfigured: either it's a dangling symbolic link, either it's not a symbolic link at all, or I don't have permissions to read it. Please report a bug to your distribution maintainers.", alternative_name);
                         }
                     } else {
                         critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" is not registered in Debian alternatives system. I'm not supposed to be invoked this way. Please report a bug to your distribution maintainers.", alternative_name);
                     }
+*/
                 } else {
-                    critical ("Couldn't determine full path to self using procfs and skipping determining it by alternatives system because no alternative name was given. You might want to report a bug to developers of this tool.");
-                    //and don't you dare to to loop readlink over args[0] as a fallback!
+                    critical ("Couldn't determine full path to self using procfs and skipping determining it by invocation path because none was passed to me.");
                 }
             }
         }
     }
-    return self_real_name;
 }
 
-string get_fallback_alternative (string alternative_name) {
+string? get_fallback_alternative (string alternative_name) {
     //returns null if fails
     string best_alternative_path = null;
     int highest_priority = 0;
@@ -63,8 +66,7 @@ string get_fallback_alternative (string alternative_name) {
         Process.spawn_async_with_pipes (null, command, null, SpawnFlags.SEARCH_PATH, null, null, null, out stdout_descriptor, null);
         var stream = FileStream.fdopen (stdout_descriptor, "r");
         assert (stream != null);
-        string self_real_name = get_self_real_name (alternative_name);
-        if (self_real_name != null) {
+        if (real_path_to_self != null) {
             while (! stream.eof ()) {
                 string line = stream.read_line ();
                 const string alternative_prefix = "Alternative: ";
@@ -73,9 +75,10 @@ string get_fallback_alternative (string alternative_name) {
                     alternative_path = line.substring ( alternative_prefix.length, -1);
                     debug ("Found alternative path \"%s\";", alternative_path);
                     int priority;
-                    stream.scanf ("Priority: %d", out priority);
+                    stream.scanf ("Priority: %d", out priority); //never skip this!
                     debug ("its priority is \"%d\".", priority);
-                    if (best_alternative_path == null || priority > highest_priority) {
+                    if ( alternative_path == real_path_to_self ) { debug ("Found self, skipping."); }
+                    else if (best_alternative_path == null || priority > highest_priority) {
                         debug ("It's the best alternative path found so far.");
                         assert (alternative_path != null);
                         best_alternative_path = alternative_path;
@@ -93,7 +96,7 @@ string get_fallback_alternative (string alternative_name) {
     return best_alternative_path;
 }
 
-string get_executable_for_alternative (string alternative_name) {
+string? get_executable_for_alternative (string alternative_name) {
     //returns null if fails
     string desired_executable = null;
     if ("www-browser" in alternative_name) {
@@ -126,23 +129,35 @@ int main (string[] args) {
     Environment.set_prgname ("user-specific-alternatives");
     Granite.Services.Logger.initialize (Environment.get_prgname ());
     Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG;
+    set_real_path_to_self (args[0]); //TODO: ditch, see beginning of file
 
-    string self_filename = Path.get_basename (args[0]);
-    debug ("Assuming the name by which our executable was called, \"%s\", to be the name of alternative we're working with", self_filename);
-    string alternative = self_filename;
+    string alternative_name = null;
+    try {
+        string current_path = args[0];
+        while ( true ) {
+            current_path = FileUtils.read_link (current_path);
+            if ( current_path.has_prefix ("/etc/alternatives") ) {
+                alternative_name = Path.get_basename (current_path);
+                break;
+            }
+        }
+    } catch (FileError e) {
+        alternative_name = Path.get_basename (args[0]);
+        warning ("Couldn't get the alternative path by following invocation symlink. Are you sure I'm installed and selected in alternatives sytem?");
+        debug ("Assuming \"%s\" to be the name of the alternative.", alternative_name);
+    }
+    debug ("The alternative name is \"%s\"", alternative_name);
 
-    string desired_executable = get_executable_for_alternative (alternative);
-
+    string desired_executable = get_executable_for_alternative (alternative_name);
     string[] executable_with_args = args;
     executable_with_args[0] = desired_executable; //replace our executable path with the one we will launch
-
     try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
     catch (SpawnError e) {
-        stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative, e.message);
+        stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative_name, e.message);
     }
 
-    //debug for alternatives fallback
-    debug ("The next item in alternatives is \"%s\", will fall back to it in case of failure", get_fallback_alternative(alternative));
+    //debug for fallback functions
+//    debug ("The next item in alternatives is \"%s\", will fall back to it in case of failure", get_fallback_alternative(alternative_name));
 
     return 0;
 }
