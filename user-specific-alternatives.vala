@@ -8,8 +8,8 @@ void usage () {
 This is a wrapper that allows Debian alternatives system to launch the application preferred by a specific user instead of a system-wide and often implicit default, e.g. for \"x-www-browser\" alternative. It passes all parameters it receives as well as stdin to the user-preferred application, so launching it should be equivalent to launching the user-preferred application directly, except this wrapper exits as soon as it spawns the target app and DOES NOT wait until it finishes and returns an exit code.
 
 To make this wrapper handle an alternative it already supports, simply register it for that alternative using update-alternatives.
-Alternative detection is often generalized, e.g. everything containing \"www-browser\" is considered to be a GUI text editor.
-To avoid \"www-browser\" launching GUI browser even when a console browser is desired, simply do not install the wrapper for that alternative.
+Alternative detection is often generalized, e.g. everything containing \"www-browser\" is considered to be a GUI web browser.
+To avoid \"www-browser\" launching GUI application even when a console browser is desired, simply do not install the wrapper for that alternative.
 
 To expand the list of supported alternatives you'll have to add a custom handler of that alternative to the code of this wrapper.\n");
 }
@@ -17,20 +17,6 @@ To expand the list of supported alternatives you'll have to add a custom handler
 bool alternative_exists (string alternative_name) {
     //doesn't do any real validity checks, just checks if it exists
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
-}
-
-//FIXME: over-engineering; get rid of it
-string get_path_to_some_existing_executable (string[] executable_list) {
-    //returns null if none exist or none are executable by us
-    string path_to_executable = null;
-    foreach (string executable in executable_list) {
-        path_to_executable = Environment.find_program_in_path (executable);
-        if (path_to_executable != null) {
-            debug ("Guessed the path to executable to be \"%s\"", path_to_executable);
-            break;
-        }
-    }
-    return path_to_executable;
 }
 
 string get_self_real_name (string? alternative_name) {
@@ -45,7 +31,7 @@ string get_self_real_name (string? alternative_name) {
             try { self_real_name = FileUtils.read_link ("/proc/curproc/file"); } //DragonflyBSD
             catch (FileError e) {
                 //damn incompatible implementations!
-                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by Debian alternatives system.");
+                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by Debian alternatives system; the result will be incorrect if this wrapper is not installed for that alternative!");
                 //if we got invoked, the relevant alternative should point to us!
                 if (alternative_name != null) {
                     if (alternative_exists (alternative_name)) {
@@ -75,12 +61,8 @@ string get_executable_for_alternative (string alternative_name) {
         desired_executable = AppInfo.get_default_for_uri_scheme (URI_SCHEME).get_executable ();
         if (desired_executable != null) { debug ("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
         else {
-            //TODO: fall back to previous item in alternatives instead!
-            warning ("Couldn't determine user-preferred application for \"www-browser\" alternative, falling back to guesswork");
-            string[] all_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "rekonq", "epiphany-browser", "epiphany", "opera", "luakit", "konqueror", "arora" };
-            string[] gnome_browsers = { "firefox", "chromium-browser", "google-chrome", "midori", "epiphany-browser", "epiphany", "opera", "luakit" };
-            if ("gnome" in alternative_name) { desired_executable = get_path_to_some_existing_executable (gnome_browsers); }
-            else { desired_executable = get_path_to_some_existing_executable (all_browsers); }
+            warning ("Couldn't determine user-preferred web browser, falling back to system-wide default");
+            //TODO: fall back to previous item in alternatives
         }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
