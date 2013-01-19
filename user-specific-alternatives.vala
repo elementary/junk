@@ -109,7 +109,7 @@ string? get_executable_for_alternative (string alternative_name) {
                 warning ("Could not determine your preferred terminal emulator: could not locate schema \"%s\", perhaps it is not installed on your system?", terminal_schema_name);
             }
         } else if (desktop_environment == null) {
-            warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set.");
+            warning ("Could not determine your preferred terminal emulator: could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set.");
         } else {
              warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry.", desktop_environment);
         }
