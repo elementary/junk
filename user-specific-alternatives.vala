@@ -125,10 +125,11 @@ int main (string[] args) {
 
     string alternative_name = null;
     try {
-        string current_path = args[0];
+        string current_path = Environment.find_program_in_path (args[0]);
         while ( true ) {
+            debug ("Looking for a path that starts with /etc/alternatives, current path: \"%s\"", current_path);
             current_path = FileUtils.read_link (current_path);
-            if ( current_path.has_prefix ("/etc/alternatives") ) {
+            if ( current_path.has_prefix ("/etc/alternatives/") ) {
                 alternative_name = Path.get_basename (current_path);
                 break;
             }
