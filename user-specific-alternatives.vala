@@ -5,8 +5,6 @@
 // This code inherits update-alternatives terminology that may be not obvious
 // It's recommented to read TERMINOLOGY in "man update-alternatives" before hacking
 
-string real_path_to_self = null; //TODO: replace it with the path as seen in the alternatives system, possibly make it local
-
 void usage () {
     stderr.printf ("Usage: you're not supposed to run this.
 
@@ -24,40 +22,10 @@ bool alternative_exists (string alternative_name) {
     return FileUtils.test ("/etc/alternatives/" + alternative_name, FileTest.EXISTS);
 }
 
-void set_real_path_to_self (string? invocation_path) {
-    //sets global variable real_path_to_self
-    //sets it to null if fails
-    //procfs lookups taken from http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/
-    try { real_path_to_self = FileUtils.read_link ("/proc/self/exe"); } //Linux
-    catch (FileError e) {
-        try { real_path_to_self = FileUtils.read_link ("/proc/curproc/exe"); } //NetBSD
-        catch (FileError e) { 
-            try { real_path_to_self = FileUtils.read_link ("/proc/curproc/file"); } //DragonflyBSD
-            catch (FileError e) {
-                //damn incompatible implementations!
-                warning ("Couldn't determine full path to self using procfs. Either procfs is disabled, or a lookup specific to your platform is not yet known to me. Falling back to lookup by invocation.");
-                if (invocation_path != null) {
-                    //FIXME: loop readlink over args[0] as a fallback because determine the alternative that way anyway
-/*                    if (alternative_exists (alternative_name)) {
-                        try { real_path_to_self = FileUtils.read_link ("/etc/alternatives/" + alternative_name); }
-                        catch (FileError e) {
-                        critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" alternative is misconfigured: either it's a dangling symbolic link, either it's not a symbolic link at all, or I don't have permissions to read it. Please report a bug to your distribution maintainers.", alternative_name);
-                        }
-                    } else {
-                        critical ("Couldn't determine full path to self neither using procfs nor by alternatives because \"%s\" is not registered in Debian alternatives system. I'm not supposed to be invoked this way. Please report a bug to your distribution maintainers.", alternative_name);
-                    }
-*/
-                } else {
-                    critical ("Couldn't determine full path to self using procfs and skipping determining it by invocation path because none was passed to me.");
-                }
-            }
-        }
-    }
-}
-
 string? get_fallback_alternative (string alternative_name) {
     //returns null if fails
     string best_alternative_path = null;
+    string self_alternative_path = null;
     int highest_priority = 0;
     debug ("Determining fallback alternative for \"%s\"", alternative_name);
     string[] command = { "update-alternatives", "--query", alternative_name, "--quiet" };
@@ -66,18 +34,22 @@ string? get_fallback_alternative (string alternative_name) {
         Process.spawn_async_with_pipes (null, command, null, SpawnFlags.SEARCH_PATH, null, null, null, out stdout_descriptor, null);
         var stream = FileStream.fdopen (stdout_descriptor, "r");
         assert (stream != null);
-        if (real_path_to_self != null) {
-            while (! stream.eof ()) {
-                string line = stream.read_line ();
-                const string alternative_prefix = "Alternative: ";
-                if (line != null && line.has_prefix (alternative_prefix)) {
+        while (! stream.eof ()) {
+            string line = stream.read_line ();
+            const string self_prefix = "Value: ";
+            const string alternative_prefix = "Alternative: ";
+            if (line != null) {
+                if (line.has_prefix (self_prefix)) {
+                    self_alternative_path = line.substring (self_prefix.length, -1);
+                } else if (line.has_prefix (alternative_prefix)) {
+                    assert (self_alternative_path != null);
                     string alternative_path;
-                    alternative_path = line.substring ( alternative_prefix.length, -1);
+                    alternative_path = line.substring (alternative_prefix.length, -1);
                     debug ("Found alternative path \"%s\";", alternative_path);
                     int priority;
                     stream.scanf ("Priority: %d", out priority); //never skip this!
                     debug ("its priority is \"%d\".", priority);
-                    if ( alternative_path == real_path_to_self ) { debug ("Found self, skipping."); }
+                    if ( alternative_path == self_alternative_path ) { debug ("Found self, skipping."); }
                     else if (best_alternative_path == null || priority > highest_priority) {
                         debug ("It's the best alternative path found so far.");
                         assert (alternative_path != null);
@@ -86,8 +58,6 @@ string? get_fallback_alternative (string alternative_name) {
                     }
                 }
             }
-        } else {
-            critical ("Cannot determine fallback for alternative \"%s\" because path to self could not be determined.", alternative_name);
         }
     } catch (SpawnError e) {
         critical ("Cannot determine fallback for alternative \"%s\" because an error occurred during update-alternatives invocation. The error was: %s", alternative_name, e.message);
@@ -129,7 +99,6 @@ int main (string[] args) {
     Environment.set_prgname ("user-specific-alternatives");
     Granite.Services.Logger.initialize (Environment.get_prgname ());
     Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG;
-    set_real_path_to_self (args[0]); //TODO: ditch, see beginning of file
 
     string alternative_name = null;
     try {
