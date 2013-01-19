@@ -88,8 +88,25 @@ string? get_executable_for_alternative (string alternative_name) {
         debug ("Your desktop environment appears to be \"%s\"", desktop_environment);
         if ( desktop_environment.casefold () == "GNOME".casefold () || desktop_environment.casefold () == "Unity".casefold () || desktop_environment.casefold () == "Pantheon".casefold () ) {
             const string terminal_schema_name = "org.gnome.desktop.default-applications.terminal";
-            Settings settings = new Settings (terminal_schema_name);
-            desired_executable = settings.get_string ("exec"); //TODO: error handling
+            const string terminal_exec_key = "exec";
+            //Settings settings = new Settings (terminal_schema_name); //we can't simply use this because it coredumps if schema is missing
+            var schema_source = SettingsSchemaSource.get_default ();
+            var terminal_schema = schema_source.lookup (terminal_schema_name, true);
+            if (terminal_schema != null) {
+                Settings settings = new Settings.full (terminal_schema, null, null);
+                string[] key_list = settings.list_keys ();
+                foreach (string key in key_list) {
+                    if ( key == terminal_exec_key ) {
+                        desired_executable = settings.get_string (terminal_exec_key);
+                        break;
+                    }
+                }
+                if (desired_executable == null) {
+                    warning ("Could not determine your preferred terminal emulator: either there's no key \"%s\" in schema \"%s\" or it's empty.", terminal_exec_key, terminal_schema_name);
+                }
+            } else {
+                warning ("Could not determine your preferred terminal emulator: could not locate schema \"%s\", perhaps it is not installed on your system?", terminal_schema_name);
+            }
         } else if (desktop_environment == null) {
             warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set.");
         } else {
@@ -136,7 +153,7 @@ int main (string[] args) {
         desired_executable = get_fallback_alternative (alternative_name);
         desired_executable_is_fallback_alternative = true;
         if (desired_executable == null) {
-            critical ("I've tried everything I know yet failed to determine what to run for alternative \"%s\". Giving up. Please contact your distributioon maintainers to resolve this problem.", alternative_name);
+            critical ("I've tried everything I know yet failed to determine what to run for alternative \"%s\". Giving up. Please contact your distribution maintainers to resolve this problem.", alternative_name);
             Process.exit (Posix.EXIT_FAILURE);
         }
     } else {
