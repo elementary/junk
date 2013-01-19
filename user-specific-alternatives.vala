@@ -68,7 +68,6 @@ string? get_fallback_alternative (string alternative_name) {
 
 string? get_executable_for_alternative (string alternative_name) {
     //returns null if fails
-    //may exit (and print usage) if detects incorrect invocation
     string desired_executable = null;
     if ("www-browser" in alternative_name) {
         const string URI_SCHEME = "http";
@@ -99,13 +98,9 @@ string? get_executable_for_alternative (string alternative_name) {
              warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry. Falling back to system-wide default.", desktop_environment);
             desired_executable = get_fallback_alternative (alternative_name);
         }
-    } else if (alternative_exists (alternative_name)) {
+    } else {
         critical ("The alternative \"%s\" is not known to me. Please inform your distribution maintainers about this issue.", alternative_name);
         desired_executable = get_fallback_alternative (alternative_name);
-    } else {
-        debug ("\"%s\" is not registered in Debian alternatives system.", alternative_name);
-        usage ();
-        Process.exit (Posix.EXIT_SUCCESS);
     }
     return desired_executable;
 }
@@ -129,7 +124,14 @@ int main (string[] args) {
         alternative_name = Path.get_basename (args[0]);
         warning ("Couldn't get the alternative path by following invocation symlink. Are you sure I'm installed and selected in alternatives sytem?");
     }
-    debug ("The name of alternative in question is assumed to be \"%s\"", alternative_name);
+
+    if (! alternative_exists (alternative_name)) {
+        debug ("\"%s\" is not registered in Debian alternatives system.", alternative_name);
+        usage ();
+        Process.exit (Posix.EXIT_SUCCESS);
+    } else {
+        debug ("The name of alternative in question is assumed to be \"%s\"", alternative_name);
+    }
 
     string? desired_executable = get_executable_for_alternative (alternative_name);
     debug ("The desired executable appears to be \"%s\"", desired_executable);
