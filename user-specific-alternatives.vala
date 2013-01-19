@@ -130,8 +130,11 @@ int main (string[] args) {
     }
 
     string? desired_executable = get_executable_for_alternative (alternative_name);
+    bool desired_executable_is_fallback_alternative = false;
     if (desired_executable == null) {
+        warning ("Could not determine user preference for alternative \"%s\". Falling back to system-wide default.", alternative_name);
         desired_executable = get_fallback_alternative (alternative_name);
+        desired_executable_is_fallback_alternative = true;
         if (desired_executable == null) {
             critical ("I've tried everything I know yet failed to determine what to run."); //TODO: elaborate
             Process.exit (Posix.EXIT_FAILURE);
@@ -144,8 +147,13 @@ int main (string[] args) {
     executable_with_args[0] = desired_executable; //replace our executable path with the one we will launch
     try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
     catch (SpawnError e) {
-        critical ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative_name, e.message);
-        Process.exit (Posix.EXIT_FAILURE);
+        if (! desired_executable_is_fallback_alternative) {
+            warning ("Could not launch your preferred application \"%s\" for alternative \"%s\". The error was: %s", desired_executable, alternative_name, e.message);
+            //TODO: try running fallback alternative path
+        } else {
+            critical ("Could not launch system-wide default \"%s\" for \"%s\". The error was: %s", desired_executable, alternative_name, e.message);
+            Process.exit (Posix.EXIT_FAILURE);
+        }
     }
 
     //debug for fallback functions
