@@ -95,7 +95,7 @@ string? get_executable_for_alternative (string alternative_name) {
             if (terminal_schema != null) {
                 Settings settings = new Settings.full (terminal_schema, null, null);
                 string[] key_list = settings.list_keys ();
-                foreach (string key in key_list) {
+                foreach (string key in key_list) { //check if the key actually exists, otherwise attempts at getting it will coredump
                     if ( key == terminal_exec_key ) {
                         desired_executable = settings.get_string (terminal_exec_key);
                         debug ("Value of \"%s\" key from schema \"%s\" was read as \"%s\"", terminal_exec_key, terminal_schema_name, desired_executable);
@@ -121,8 +121,9 @@ string? get_executable_for_alternative (string alternative_name) {
 
 int main (string[] args) {
 
-    Granite.Services.Logger.initialize ("user-specific-alternatives");
-    Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG;
+    Environment.set_prgname ("user-specific-alternatives");
+    Granite.Services.Logger.initialize (Environment.get_prgname ());
+//    Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG; //uncomment for debug output
 
     string alternative_name = null;
     try {
