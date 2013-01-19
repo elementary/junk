@@ -136,7 +136,7 @@ int main (string[] args) {
         desired_executable = get_fallback_alternative (alternative_name);
         desired_executable_is_fallback_alternative = true;
         if (desired_executable == null) {
-            critical ("I've tried everything I know yet failed to determine what to run."); //TODO: elaborate
+            critical ("I've tried everything I know yet failed to determine what to run. Giving up."); //TODO: elaborate
             Process.exit (Posix.EXIT_FAILURE);
         }
     } else {
@@ -148,15 +148,27 @@ int main (string[] args) {
     try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
     catch (SpawnError e) {
         if (! desired_executable_is_fallback_alternative) {
-            warning ("Could not launch your preferred application \"%s\" for alternative \"%s\". The error was: %s", desired_executable, alternative_name, e.message);
-            //TODO: try running fallback alternative path
+            warning ("Could not launch your preferred application \"%s\" for alternative \"%s\". Falling back to system-wide default. The error was: %s", desired_executable, alternative_name, e.message);
+            desired_executable = get_fallback_alternative (alternative_name);
+            desired_executable_is_fallback_alternative = true; //we probably aren't going to need it anymore, but let's be honest anyway
+            if (desired_executable == null) {
+                critical ("Could not determine the system-wide default. Giving up.");
+                Process.exit (Posix.EXIT_FAILURE);
+            } else {
+                executable_with_args[0] = desired_executable;
+                try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
+                catch (SpawnError e) {
+                    critical ("Could not launch system-wide default \"%s\" for alternative \"%s\" either. Giving up. The error was: %s", desired_executable, alternative_name, e.message);
+                    Process.exit (Posix.EXIT_FAILURE);
+                }
+            }
         } else {
-            critical ("Could not launch system-wide default \"%s\" for \"%s\". The error was: %s", desired_executable, alternative_name, e.message);
+            critical ("Could not launch system-wide default \"%s\" for alternative \"%s\". Giving up. The error was: %s", desired_executable, alternative_name, e.message);
             Process.exit (Posix.EXIT_FAILURE);
         }
     }
 
-    //debug for fallback functions
+    //debug for fallback function
 //    debug ("The next item in alternatives is \"%s\", will fall back to it in case of failure", get_fallback_alternative(alternative_name));
 
     return Posix.EXIT_SUCCESS;
