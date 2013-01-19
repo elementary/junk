@@ -76,7 +76,8 @@ string? get_executable_for_alternative (string alternative_name) {
         if (desired_executable != null) { debug ("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
         else {
             warning ("Couldn't determine user-preferred web browser, falling back to system-wide default");
-            //TODO: fall back to previous item in alternatives
+            desired_executable = get_fallback_alternative (alternative_name);
+            //TODO: warn about failure of the above
         }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
@@ -84,8 +85,9 @@ string? get_executable_for_alternative (string alternative_name) {
         desired_executable = AppInfo.get_default_for_type (MIMETYPE, false).get_executable ();
         debug ("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable );
     } else if (alternative_exists (alternative_name)) {
-        critical ("The alternative \"%s\" is not known to me. Contact your distribution maintainers about this issue.", alternative_name);
-        Process.exit (1); //TODO: fall back to next item in alternatives system, convert the above to a warning
+        critical ("The alternative \"%s\" is not known to me. Please inform your distribution maintainers about this issue.", alternative_name);
+        desired_executable = get_fallback_alternative (alternative_name);
+        //TODO: warn about failure of the above
     } else {
         debug ("\"%s\" is not registered in Debian alternatives system.", alternative_name);
         usage ();
