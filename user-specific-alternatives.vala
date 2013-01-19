@@ -136,7 +136,7 @@ int main (string[] args) {
         desired_executable = get_fallback_alternative (alternative_name);
         desired_executable_is_fallback_alternative = true;
         if (desired_executable == null) {
-            critical ("I've tried everything I know yet failed to determine what to run. Giving up."); //TODO: elaborate
+            critical ("I've tried everything I know yet failed to determine what to run for alternative \"%s\". Giving up. Please contact your distributioon maintainers to resolve this problem.", alternative_name);
             Process.exit (Posix.EXIT_FAILURE);
         }
     } else {
