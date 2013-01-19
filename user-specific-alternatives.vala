@@ -76,7 +76,6 @@ string? get_executable_for_alternative (string alternative_name) {
         if (desired_executable != null) { debug ("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
         else {
             warning ("Couldn't determine user-preferred web browser, falling back to system-wide default");
-            desired_executable = get_fallback_alternative (alternative_name);
         }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
@@ -92,15 +91,12 @@ string? get_executable_for_alternative (string alternative_name) {
             Settings settings = new Settings (terminal_schema_name);
             desired_executable = settings.get_string ("exec"); //TODO: error handling
         } else if (desktop_environment == null) {
-            warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set. Falling back to system-wide default.");
-            desired_executable = get_fallback_alternative (alternative_name);
+            warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set.");
         } else {
-             warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry. Falling back to system-wide default.", desktop_environment);
-            desired_executable = get_fallback_alternative (alternative_name);
+             warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry.", desktop_environment);
         }
     } else {
         critical ("The alternative \"%s\" is not known to me. Please inform your distribution maintainers about this issue.", alternative_name);
-        desired_executable = get_fallback_alternative (alternative_name);
     }
     return desired_executable;
 }
@@ -134,10 +130,14 @@ int main (string[] args) {
     }
 
     string? desired_executable = get_executable_for_alternative (alternative_name);
-    debug ("The desired executable appears to be \"%s\"", desired_executable);
     if (desired_executable == null) {
-        critical ("I've tried everything I know yet failed to determine what to run."); //TODO: elaborate
-        Process.exit (Posix.EXIT_FAILURE);
+        desired_executable = get_fallback_alternative (alternative_name);
+        if (desired_executable == null) {
+            critical ("I've tried everything I know yet failed to determine what to run."); //TODO: elaborate
+            Process.exit (Posix.EXIT_FAILURE);
+        }
+    } else {
+        debug ("The desired executable appears to be \"%s\"", desired_executable);
     }
 
     string[] executable_with_args = args;
