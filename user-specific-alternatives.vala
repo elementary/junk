@@ -113,7 +113,7 @@ int main (string[] args) {
     string alternative_name = null;
     try {
         string current_path = args[0];
-        while ( true ) {
+        while ( true ) { //TODO: investigate infinite loop on malformed args[0]
             current_path = FileUtils.read_link (current_path);
             if ( current_path.has_prefix ("/etc/alternatives") ) {
                 alternative_name = Path.get_basename (current_path);
@@ -128,7 +128,7 @@ int main (string[] args) {
 
     string? desired_executable = get_executable_for_alternative (alternative_name);
     debug ("The desired executable appears to be \"%s\"", desired_executable);
-    if (desired_executable == null) { //TODO: doesn't seem to work
+    if (desired_executable == null) {
         critical ("FAIL"); //TODO: describe
         Process.exit (Posix.EXIT_FAILURE);
     }
