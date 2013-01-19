@@ -98,6 +98,7 @@ string? get_executable_for_alternative (string alternative_name) {
                 foreach (string key in key_list) {
                     if ( key == terminal_exec_key ) {
                         desired_executable = settings.get_string (terminal_exec_key);
+                        debug ("Value of \"%s\" key from schema \"%s\" was read as \"%s\"", terminal_exec_key, terminal_schema_name, desired_executable);
                         break;
                     }
                 }
@@ -113,7 +114,7 @@ string? get_executable_for_alternative (string alternative_name) {
              warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry.", desktop_environment);
         }
     } else {
-        critical ("The alternative \"%s\" is not known to me. Please inform your distribution maintainers about this issue.", alternative_name);
+        critical ("The alternative \"%s\" is not known to me and should not point at me. Please inform your distribution maintainers about this issue.", alternative_name);
     }
     return desired_executable;
 }
