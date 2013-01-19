@@ -1,12 +1,12 @@
 // -*- Mode: vala; indent-tabs-mode: nil; tab-width: 4 -*-
 
-// $ valac --pkg granite app-by-mime.vala
+// $ valac --pkg posix --pkg granite app-by-mime.vala
 
 // This code inherits update-alternatives terminology that may be not obvious
 // It's recommented to read TERMINOLOGY in "man update-alternatives" before hacking
 
 void usage () {
-    stderr.printf ("Usage: you're not supposed to run this.
+    stderr.printf ("Usage: you're not supposed to run this directly.
 
 This is a wrapper that allows Debian alternatives system to launch the application preferred by a specific user instead of a system-wide and often implicit default, e.g. for \"x-www-browser\" alternative. It passes all parameters it receives as well as stdin to the user-preferred application, so launching it should be equivalent to launching the user-preferred application directly, except this wrapper exits as soon as it spawns the target app and DOES NOT wait until it finishes and returns an exit code.
 
@@ -36,7 +36,7 @@ string? get_fallback_alternative (string alternative_name) {
         assert (stream != null);
         while (! stream.eof ()) {
             string line = stream.read_line ();
-            const string self_prefix = "Value: ";
+            const string self_prefix = "Value: "; //assumption: if this binary got invoked, it's the current value in alternatives system
             const string alternative_prefix = "Alternative: ";
             if (line != null) {
                 if (line.has_prefix (self_prefix)) {
@@ -68,38 +68,46 @@ string? get_fallback_alternative (string alternative_name) {
 
 string? get_executable_for_alternative (string alternative_name) {
     //returns null if fails
+    //may exit (and print usage) if detects incorrect invocation
     string desired_executable = null;
     if ("www-browser" in alternative_name) {
         const string URI_SCHEME = "http";
-        debug ("Looking up the user preference for \"www-browser\" alternative");
+        debug ("Looking up the user preference for web browser application");
         desired_executable = AppInfo.get_default_for_uri_scheme (URI_SCHEME).get_executable ();
         if (desired_executable != null) { debug ("The default executable for URI scheme \"%s\" is \"%s\"", URI_SCHEME, desired_executable ); }
         else {
             warning ("Couldn't determine user-preferred web browser, falling back to system-wide default");
             desired_executable = get_fallback_alternative (alternative_name);
-            //TODO: warn about failure of the above
         }
     } else if ("text-editor" in alternative_name) {
         const string MIMETYPE = "text/plain";
-        debug ("Looking up the user preference for \"text-editor\" alternative");
+        debug ("Looking up the user preference for text editor application");
         desired_executable = AppInfo.get_default_for_type (MIMETYPE, false).get_executable ();
-        debug ("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable );
+        debug ("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable);
+    } else if ("terminal-emulator" in alternative_name) {
+        debug ("Looking up the user preference for terminal emulator application");
+        string desktop_environment = Environment.get_variable ("XDG_CURRENT_DESKTOP"); //TODO: error handling
+        debug ("Your desktop environment appears to be %s", desktop_environment);
+        if ( desktop_environment.casefold () == "GNOME".casefold () || desktop_environment.casefold () == "Unity".casefold () || desktop_environment.casefold () == "Pantheon".casefold () ) {
+            critical ("Stub: read the preferred terminal emulator from GSettings"); //TODO: fetch value from GSettings
+        } else {
+            warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry. Falling back to system-wide default.", desktop_environment);
+            desired_executable = get_fallback_alternative (alternative_name);
+        }
     } else if (alternative_exists (alternative_name)) {
         critical ("The alternative \"%s\" is not known to me. Please inform your distribution maintainers about this issue.", alternative_name);
         desired_executable = get_fallback_alternative (alternative_name);
-        //TODO: warn about failure of the above
     } else {
         debug ("\"%s\" is not registered in Debian alternatives system.", alternative_name);
         usage ();
-        Process.exit (0);
+        Process.exit (Posix.EXIT_SUCCESS);
     }
     return desired_executable;
 }
 
 int main (string[] args) {
 
-    Environment.set_prgname ("user-specific-alternatives");
-    Granite.Services.Logger.initialize (Environment.get_prgname ());
+    Granite.Services.Logger.initialize ("user-specific-alternatives");
     Granite.Services.Logger.DisplayLevel = Granite.Services.LogLevel.DEBUG;
 
     string alternative_name = null;
@@ -118,16 +126,23 @@ int main (string[] args) {
     }
     debug ("The name of alternative in question is assumed to be \"%s\"", alternative_name);
 
-    string desired_executable = get_executable_for_alternative (alternative_name);
+    string? desired_executable = get_executable_for_alternative (alternative_name);
+    debug ("The desired executable appears to be \"%s\"", desired_executable);
+    if (desired_executable == null) { //TODO: doesn't seem to work
+        critical ("FAIL"); //TODO: describe
+        Process.exit (Posix.EXIT_FAILURE);
+    }
+
     string[] executable_with_args = args;
     executable_with_args[0] = desired_executable; //replace our executable path with the one we will launch
     try { Process.spawn_async (null, executable_with_args, null, SpawnFlags.SEARCH_PATH | SpawnFlags.CHILD_INHERITS_STDIN, null, null); }
     catch (SpawnError e) {
-        stdout.printf ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative_name, e.message);
+        critical ("Could not launch your preferred application for alternative \"%s\".\nThe error was: %s\n", alternative_name, e.message);
+        Process.exit (Posix.EXIT_FAILURE);
     }
 
     //debug for fallback functions
 //    debug ("The next item in alternatives is \"%s\", will fall back to it in case of failure", get_fallback_alternative(alternative_name));
 
-    return 0;
+    return Posix.EXIT_SUCCESS;
 }
