@@ -1,6 +1,6 @@
 // -*- Mode: vala; indent-tabs-mode: nil; tab-width: 4 -*-
 
-// $ valac --pkg posix --pkg granite app-by-mime.vala
+// $ valac --pkg posix --pkg gio-2.0 --pkg granite app-by-mime.vala
 
 // This code inherits update-alternatives terminology that may be not obvious
 // It's recommented to read TERMINOLOGY in "man update-alternatives" before hacking
@@ -89,7 +89,9 @@ string? get_executable_for_alternative (string alternative_name) {
         string desktop_environment = Environment.get_variable ("XDG_CURRENT_DESKTOP");
         debug ("Your desktop environment appears to be \"%s\"", desktop_environment);
         if ( desktop_environment.casefold () == "GNOME".casefold () || desktop_environment.casefold () == "Unity".casefold () || desktop_environment.casefold () == "Pantheon".casefold () ) {
-            critical ("Stub: read the preferred terminal emulator from GSettings"); //TODO: fetch value from GSettings
+            const string terminal_schema_name = "org.gnome.desktop.default-applications.terminal";
+            Settings settings = new Settings (terminal_schema_name);
+            desired_executable = settings.get_string ("exec"); //TODO: error handling
         } else if (desktop_environment == null) {
             warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set. Falling back to system-wide default.");
             desired_executable = get_fallback_alternative (alternative_name);
