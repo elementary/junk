@@ -86,17 +86,15 @@ string? get_executable_for_alternative (string alternative_name) {
         debug ("The default executable for content type \"%s\" is \"%s\"", MIMETYPE, desired_executable);
     } else if ("terminal-emulator" in alternative_name) {
         debug ("Looking up the user preference for terminal emulator application");
-        string desktop_environment = Environment.get_variable ("XDG_CURRENT_DESKTOP");
-        if (desktop_environment != null) {
-            debug ("Your desktop environment appears to be %s", desktop_environment);
-            if ( desktop_environment.casefold () == "GNOME".casefold () || desktop_environment.casefold () == "Unity".casefold () || desktop_environment.casefold () == "Pantheon".casefold () ) {
-                critical ("Stub: read the preferred terminal emulator from GSettings"); //TODO: fetch value from GSettings
-            } else {
-                warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry. Falling back to system-wide default.", desktop_environment);
-                desired_executable = get_fallback_alternative (alternative_name);
-            }
-        } else {
+        string desktop_environment = Environment.get_variable ("XDG_CURRENT_DESKTOP"); //TODO: error handling
+        debug ("Your desktop environment appears to be \"%s\"", desktop_environment);
+        if ( desktop_environment.casefold () == "GNOME".casefold () || desktop_environment.casefold () == "Unity".casefold () || desktop_environment.casefold () == "Pantheon".casefold () ) {
+            critical ("Stub: read the preferred terminal emulator from GSettings"); //TODO: fetch value from GSettings
+        } else if (desktop_environment == null) {
             warning ("Could not determine your desktop environment because XDG_CURRENT_DESKTOP environment variable is not set. Falling back to system-wide default.");
+            desired_executable = get_fallback_alternative (alternative_name);
+        } else {
+             warning ("I'm not aware of a way to detect the default terminal emulator in your desktop environment \"%s\", sorry. Falling back to system-wide default.", desktop_environment);
             desired_executable = get_fallback_alternative (alternative_name);
         }
     } else if (alternative_exists (alternative_name)) {
