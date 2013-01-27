@@ -59,5 +59,5 @@ add_executable (user-specific-alternatives ${VALA_C})
 find_library (M_LIB m)
 target_link_libraries (user-specific-alternatives ${M_LIB})
 
-install (TARGETS user-specific-alternatives RUNTIME DESTINATION bin)
+install (TARGETS user-specific-alternatives RUNTIME DESTINATION lib)
 #install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/pantheon-terminal.desktop DESTINATION share/applications)
