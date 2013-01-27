@@ -43,7 +43,7 @@ vala_precompile(VALA_C
 PACKAGES
     gio-2.0
     granite
-    
+    posix
 OPTIONS
     --thread
     --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi/
