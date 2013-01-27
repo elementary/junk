@@ -26,11 +26,11 @@ configure_file (${CMAKE_SOURCE_DIR}/src/config.vala.cmake ${CMAKE_SOURCE_DIR}/sr
 #add_definitions (-DGETTEXT_PACKAGE=\"${GETTEXT_PACKAGE}\")_l
 
 find_package (PkgConfig)
-pkg_check_modules (DEPS REQUIRED posix gio-2.0 granite) #posix is not required but I'm getting a posix compile error anyway
+pkg_check_modules (DEPS REQUIRED gio-2.0 granite) #posix is not required but I'm getting a posix compile error anyway
 
 add_definitions (${DEPS_CFLAGS})
 
-#link_libraries (${DEPS_LIBRARIES})
+link_libraries (${DEPS_LIBRARIES})
 link_directories (${DEPS_LIBRARY_DIRS})
 
 find_package (Vala REQUIRED)
@@ -43,7 +43,7 @@ vala_precompile(VALA_C
 PACKAGES
     gio-2.0
     granite
-#   posix
+    
 OPTIONS
     --thread
     --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi/
@@ -52,12 +52,12 @@ OPTIONS
 #include (GSettings)
 #add_schema ("org.elementary.pantheon-terminal.gschema.xml")
 
-#link_libraries (m)
+link_libraries (m)
 #add_subdirectory (po)
 
 add_executable (user-specific-alternatives ${VALA_C})
-#find_library (M_LIB m)
-#target_link_libraries (user-specific-alternatives ${M_LIB})
+find_library (M_LIB m)
+target_link_libraries (user-specific-alternatives ${M_LIB})
 
 install (TARGETS user-specific-alternatives RUNTIME DESTINATION bin)
 #install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/pantheon-terminal.desktop DESTINATION share/applications)
