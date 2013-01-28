@@ -53,5 +53,6 @@ add_executable (user-specific-alternatives ${VALA_C})
 find_library (M_LIB m)
 target_link_libraries (user-specific-alternatives ${M_LIB})
 
-install (TARGETS user-specific-alternatives RUNTIME DESTINATION lib)
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory lib/user-specific-alternatives)
+install (TARGETS user-specific-alternatives RUNTIME DESTINATION lib/user-specific-alternatives)
 #install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/user-specific-alternatives.desktop DESTINATION share/applications)
