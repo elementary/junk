@@ -17,3 +17,16 @@ Description: Make Debian alternatives system honor per-user preferences
  This is a wrapper that allows Debian alternatives system to launch
  the application preferred by a specific user instead of a system-wide and often
  implicit default, e.g. for "x-www-browser" alternative.
+
+Package: user-specific-alternatives-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: user-specific-alternatives (= ${binary:Version}), ${misc:Depends}
+Enhances: user-specific-alternatives
+Description: Make Debian alternatives system honor per-user preferences (debugging symbols)
+ This is a wrapper that allows Debian alternatives system to launch
+ the application preferred by a specific user instead of a system-wide and often
+ implicit default, e.g. for "x-www-browser" alternative.
+ .
+ This package contains debugging symbols for user-specific-alternatives.
