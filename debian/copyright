@@ -2,7 +2,7 @@ Format: http://dep.debian.net/deps/dep5
 Upstream-Name: user-specific-alternatives
 Source: https://code.launchpad.net/~elementary-os/elementaryos/user-specific-alternatives/
 
-Files: src/*, debian/*
+Files: src/* debian/*
 Copyright: 2013 Sergey "Shnatsel" Davidoff <sergey@elementaryos.org>
 License: GPL-3.0+
 
