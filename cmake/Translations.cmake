@@ -22,6 +22,8 @@ macro(add_translations_catalog NLS_PACKAGE)
 
 
     set(C_SOURCE "")
+    set(VALA_C_SOURCE "")
+    set(GLADE_C_SOURCE "")
 
     foreach(FILES_INPUT ${ARGN})
         file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.c)
@@ -29,13 +31,37 @@ macro(add_translations_catalog NLS_PACKAGE)
             set(C_SOURCE ${C_SOURCE} ${C_FILE})
         endforeach()
         file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.vala)
-        foreach(C_FILE ${SOURCE_FILES})
-            set(C_SOURCE ${C_SOURCE} ${C_FILE})
+        foreach(VALA_C_FILE ${SOURCE_FILES})
+            set(VALA_C_SOURCE ${VALA_C_SOURCE} ${VALA_C_FILE})
+        endforeach()
+        file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.ui)
+        foreach(GLADE_C_FILE ${SOURCE_FILES})
+            set(GLADE_C_SOURCE ${GLADE_C_SOURCE} ${GLADE_C_FILE})
         endforeach()
     endforeach()
 
-    add_custom_command (TARGET pot COMMAND
-        ${XGETTEXT_EXECUTABLE} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
-        ${VALA_SOURCE} ${C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
+    set(CONTINUE_FLAG "")
+
+    IF(NOT "${C_SOURCE}" STREQUAL "")
+        add_custom_command (TARGET pot COMMAND
+            ${XGETTEXT_EXECUTABLE} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
+            ${VALA_SOURCE} ${C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
         )
+        set(CONTINUE_FLAG "-j")
+    ENDIF()
+
+    IF(NOT "${VALA_C_SOURCE}" STREQUAL "")
+        add_custom_command (TARGET pot COMMAND
+            ${XGETTEXT_EXECUTABLE} ${CONTINUE_FLAG} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
+            ${VALA_SOURCE} -LC\# ${VALA_C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
+        )
+        set(CONTINUE_FLAG "-j")
+    ENDIF()
+
+    IF(NOT "${GLADE_C_SOURCE}" STREQUAL "")
+        add_custom_command (TARGET pot COMMAND
+            ${XGETTEXT_EXECUTABLE} ${CONTINUE_FLAG} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
+            ${VALA_SOURCE} -LGlade ${GLADE_C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
+        )
+    ENDIF()  
 endmacro()
