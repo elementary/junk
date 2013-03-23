@@ -20,48 +20,47 @@ macro(add_translations_catalog NLS_PACKAGE)
     add_custom_target (pot COMMENT “Building translation catalog.”)
     find_program (XGETTEXT_EXECUTABLE xgettext)
 
-
     set(C_SOURCE "")
-    set(VALA_C_SOURCE "")
-    set(GLADE_C_SOURCE "")
+    set(VALA_SOURCE "")
+    set(GLADE_SOURCE "")
 
     foreach(FILES_INPUT ${ARGN})
-        file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.c)
+        set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT})
+
+        file (GLOB_RECURSE SOURCE_FILES ${BASE_DIRECTORY}/*.c)
         foreach(C_FILE ${SOURCE_FILES})
             set(C_SOURCE ${C_SOURCE} ${C_FILE})
         endforeach()
-        file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.vala)
+
+        file (GLOB_RECURSE SOURCE_FILES ${BASE_DIRECTORY}/*.vala)
         foreach(VALA_C_FILE ${SOURCE_FILES})
-            set(VALA_C_SOURCE ${VALA_C_SOURCE} ${VALA_C_FILE})
+            set(VALA_SOURCE ${VALA_SOURCE} ${VALA_C_FILE})
         endforeach()
-        file (GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${FILES_INPUT}/*.ui)
+
+        file (GLOB_RECURSE SOURCE_FILES ${BASE_DIRECTORY}/*.ui)
         foreach(GLADE_C_FILE ${SOURCE_FILES})
-            set(GLADE_C_SOURCE ${GLADE_C_SOURCE} ${GLADE_C_FILE})
+            set(GLADE_SOURCE ${GLADE_SOURCE} ${GLADE_C_FILE})
         endforeach()
     endforeach()
 
-    set(CONTINUE_FLAG "")
+    set(BASE_XGETTEXT_COMMAND
+        ${XGETTEXT_EXECUTABLE} -d ${NLS_PACKAGE}
+        -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
+        --keyword="_" --keyword="N_" --from-code=UTF-8)
+
+   set(CONTINUE_FLAG "")
 
     IF(NOT "${C_SOURCE}" STREQUAL "")
-        add_custom_command (TARGET pot COMMAND
-            ${XGETTEXT_EXECUTABLE} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
-            ${VALA_SOURCE} ${C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
-        )
+        add_custom_command(TARGET pot COMMAND ${BASE_XGETTEXT_COMMAND} ${C_SOURCE})
         set(CONTINUE_FLAG "-j")
     ENDIF()
 
-    IF(NOT "${VALA_C_SOURCE}" STREQUAL "")
-        add_custom_command (TARGET pot COMMAND
-            ${XGETTEXT_EXECUTABLE} ${CONTINUE_FLAG} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
-            ${VALA_SOURCE} -LC\# ${VALA_C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
-        )
+    IF(NOT "${VALA_SOURCE}" STREQUAL "")
+        add_custom_command(TARGET pot COMMAND ${BASE_XGETTEXT_COMMAND} ${CONTINUE_FLAG} -LC\# ${VALA_SOURCE})
         set(CONTINUE_FLAG "-j")
     ENDIF()
 
-    IF(NOT "${GLADE_C_SOURCE}" STREQUAL "")
-        add_custom_command (TARGET pot COMMAND
-            ${XGETTEXT_EXECUTABLE} ${CONTINUE_FLAG} -d ${NLS_PACKAGE} -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
-            ${VALA_SOURCE} -LGlade ${GLADE_C_SOURCE} --keyword="_" --keyword="N_" --from-code=UTF-8
-        )
+    IF(NOT "${GLADE_SOURCE}" STREQUAL "")
+        add_custom_command (TARGET pot COMMAND ${BASE_XGETTEXT_COMMAND} ${CONTINUE_FLAG} -LGlade ${GLADE_SOURCE})
     ENDIF()  
 endmacro()
