@@ -1,0 +1,17 @@
+Source: switchboard-gnome-control-center-override
+Section: x11
+Priority: extra
+Maintainer: Sergey "Shnatsel" Davidoff <sergey@elementaryos.org>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+#Vcs-Git: git://git.debian.org/collab-maint/switchboard-gnome-control-center-override.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/switchboard-gnome-control-center-override.git;a=summary
+
+Package: switchboard-gnome-control-center-override
+Architecture: all
+Depends: ${misc:Depends}, switchboard
+Replaces: gnome-control-center
+Suggests: switchboard-gnome-control-center
+Enhances: switchboard-gnome-control-center
+Description: Redirect GNOME Control Center calls to Switchboard
+ This package redirects calls to gnome-control-center binary to switchboard.

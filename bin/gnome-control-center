@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Compatibily layer that redirects gnome-control-center calls to switchboard
+# Copyright: 2013 Sergey "Shnatsel" Davidoff <sergey@elementaryos.org>
+# License: GNU GPL 2.0+
+
+list_contains() {
+# usage: list_contains $list $element
+# http://stackoverflow.com/questions/8063228/how-do-i-check-if-a-variable-exists-in-a-list-in-bash
+    for word in $1; do
+        [[ "$word" = "$2" ]] && return 0
+    done
+    return 1
+}
+
+# parse environment variables
+XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME"/.local/share/}
+XDG_DATA_DIRS=${XDG_DATA_DIRS:- /usr/local/share/:/usr/share/}
+DIR_HIERARCHY="$XDG_DATA_HOME
+$(echo $XDG_DATA_DIRS | tr ':' '\n')"
+
+# parse command-line options
+while true; do
+if [ "${1#-}" = "$1" ] && [ -n "$1" ]; then
+    # not prefixed with "-", should be the panel name
+    requested_plug="$1"
+elif [ "$1" = '-v' ] || [ "$1" = '--verbose' ] || [ "$1" = '-o' ] || [ "$1" = '--overview' ]; then
+    : # do nothing, Switchboard doesn't support these parameters
+else
+    switchboard_options="$switchboard_options $1"
+fi
+shift 2>/dev/null || break
+done
+
+# generate the list of all existing plugs
+for base_directory in $DIR_HIERARCHY; do
+plug_list="$plug_list
+$(find -L $base_directory/../lib/plugs/ -type f -name '*.plug' 2>/dev/null)"
+done
+plug_list=$(echo "$plug_list" | sort -u | rev | cut -d '/' -f 1 | rev)
+
+if [ -z "$requested_plug" ]; then
+    : # no more parameters to add
+elif list_contains "$plug_list" 'gnomecc-'"$requested_plug"'.plug'; then
+    switchboard_options="--open-plug=gnomecc-$requested_plug.plug $switchboard_options"
+else # checking for native plug existence is pointless - we'd pass the same parameters anyway
+    switchboard_options="--open-plug=$requested_plug.plug $switchboard_options"
+fi
+
+switchboard $switchboard_options
