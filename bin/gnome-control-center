@@ -39,6 +39,20 @@ $(find -L $base_directory/../lib/plugs/ -type f -name '*.plug' 2>/dev/null)"
 done
 plug_list=$(echo "$plug_list" | sort -u | rev | cut -d '/' -f 1 | rev)
 
+
+#FIXME: hacks to make this work with Ubuntu sound panel hacks
+if [ "$requested_plug" = 'sound' ] || [ "$requested_plug" = 'sound-nua' ] ; then
+    sound_nua_plug_present=$(echo "$plug_list" | grep -q 'sound-nua.plug' && echo true || echo false)
+    sound_plug_present=$(echo "$plug_list" | grep -q 'sound.plug' && echo true || echo false)
+    if $sound_nua_plug_present; then
+        requested_plug='sound-nua'
+    elif $sound_plug_present; then
+        requested_plug='sound'
+    else
+        : # not our problem then
+    fi
+fi
+
 if [ -z "$requested_plug" ]; then
     : # no more parameters to add
 elif list_contains "$plug_list" 'gnomecc-'"$requested_plug"'.plug'; then
