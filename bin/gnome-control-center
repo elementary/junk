@@ -4,21 +4,6 @@
 # Copyright: 2013 Sergey "Shnatsel" Davidoff <sergey@elementaryos.org>
 # License: GNU GPL 2.0+
 
-list_contains() {
-# usage: list_contains $list $element
-# http://stackoverflow.com/questions/8063228/how-do-i-check-if-a-variable-exists-in-a-list-in-bash
-    for word in $1; do
-        [[ "$word" = "$2" ]] && return 0
-    done
-    return 1
-}
-
-# parse environment variables
-XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME"/.local/share/}
-XDG_DATA_DIRS=${XDG_DATA_DIRS:- /usr/local/share/:/usr/share/}
-DIR_HIERARCHY="$XDG_DATA_HOME
-$(echo $XDG_DATA_DIRS | tr ':' '\n')"
-
 # parse command-line options
 while true; do
 if [ "${1#-}" = "$1" ] && [ -n "$1" ]; then
@@ -32,45 +17,4 @@ fi
 shift 2>/dev/null || break
 done
 
-# generate the list of all existing plugs
-for base_directory in $DIR_HIERARCHY; do
-plug_list="$plug_list
-$(find -L $base_directory/../lib/plugs/ -type f -name '*.plug' 2>/dev/null)"
-done
-plug_list=$(echo "$plug_list" | sort -u | rev | cut -d '/' -f 1 | rev)
-
-
-#FIXME: hacks to make this work with Ubuntu sound panel hacks
-if [ "$requested_plug" = 'sound' ] || [ "$requested_plug" = 'sound-nua' ] ; then
-    sound_nua_plug_present=$(echo "$plug_list" | grep -q 'sound-nua.plug' && echo true || echo false)
-    sound_plug_present=$(echo "$plug_list" | grep -q 'sound.plug' && echo true || echo false)
-    if $sound_nua_plug_present; then
-        requested_plug='sound-nua'
-    elif $sound_plug_present; then
-        requested_plug='sound'
-    else
-        : # not our problem then
-    fi
-fi
-
-# GNOME ships 2 separate panels for keyboard while pantheon has just one
-if [ "$requested_plug" = 'region' ] ; then
-    if list_contains "$plug_list" 'region.plug'; then
-        : # fine
-    elif list_contains "$plug_list" 'gnomecc-region.plug'; then
-        : # decent
-    else
-        # calling a keyboard layout plug "region" doesn't sound like a good idea
-        requested_plug='keyboard'
-    fi
-fi
-
-if [ -z "$requested_plug" ]; then
-    : # no more parameters to add
-elif list_contains "$plug_list" 'gnomecc-'"$requested_plug"'.plug'; then
-    switchboard_options="--open-plug=gnomecc-$requested_plug.plug $switchboard_options"
-else # checking for native plug existence is pointless - we'd pass the same parameters anyway
-    switchboard_options="--open-plug=$requested_plug.plug $switchboard_options"
-fi
-
-switchboard $switchboard_options
+switchboard $switchboard_options $requested_plug
