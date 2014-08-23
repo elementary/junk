@@ -1,0 +1,21 @@
+/*****************
+* Navigation Bar *
+*****************/
+
+nav {
+    height: 48px;
+    font-size: 16px;
+
+    li {
+        display: inline;
+
+        a {
+            display: inline-block;
+            padding: 12px 15px;
+
+            &:hover {
+                color: #000;
+            }
+        }
+    }
+}
