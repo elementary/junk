@@ -18,7 +18,7 @@ nav {
         }
     }
 
-    > a {
+    .row > a {
         padding: 0 18px;
     }
 
@@ -26,17 +26,14 @@ nav {
         display: none;
 
         li {
-
-            a {
-                padding: 16px $nav-spacing/2;
-            }
+            padding: 16px $nav-spacing/2;
         }
     }
 }
 
-@media only screen and (min-width : $desktop_width) {
+@media only screen and (min-width : $foundation-mq-medium) {
+
     nav {
-        max-width: 960px;
 
         ul {
             float: left;
@@ -58,14 +55,15 @@ nav {
             }
         }
 
-        > a {
+        .row > a {
             display: none;
         }
 
         li.home {
             width: 32px;
             height: 34px;
-            margin: 4px $nav-spacing/2 0;
+            margin: 0 $nav-spacing/2 0 0;
+            padding: 13px 0 0;
 
             a {
                 width: 32px;
