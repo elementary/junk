@@ -20,32 +20,44 @@ body {
 }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
-    font-weight: 400;
+    font-weight: 300;
     margin: 20px 0;
 }
 
 h1, .h1 {
     font-size: 24pt;
+
+    &.title {
+        font-family: Raleway, sans-serif;
+        font-weight: 200;
+        font-size: 48pt;
+        
+        strong {
+            font-weight: 400;
+        }
+    }
 }
 
 h2, .h2 {
     font-size: 18pt;
+    line-height: 24pt;
 }
 
 h3, .h3 {
-    font-size: 12pt;
+    font-size: 16pt;
+    line-height: 20pt;
 }
 
 h4, .h4 {
-    font-size: 28px;
+    font-size: 14pt;
 }
 
 h5, .h5 {
-    font-size: 24px;
+    font-size: 12pt;
 }
 
 h6, .h6 {
-    font-size: 20px;
+    font-size: 10pt;
 }
 
 p {
@@ -167,6 +179,23 @@ blockquote {
 
         &:before {
             content: '\2014 \00A0';
+        }
+    }
+
+    &.traditional {
+        border: 0;
+        padding: 10px;
+        
+        &:before {
+            content: "“" ;
+            float: left;
+            font-size: 40px;
+        }
+
+        &:after {
+            content: "”" ;
+            float: right;
+            font-size: 40px;
         }
     }
 }

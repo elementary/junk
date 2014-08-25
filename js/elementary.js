@@ -13,4 +13,9 @@ $(function () {
             $("html").css("cursor", "auto");
         }
     });
+    //nav
+    $("nav a.nav-current-section").click (function () {
+        $("nav ul").toggle ();
+        return false;
+    });
 });

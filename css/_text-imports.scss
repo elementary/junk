@@ -1,6 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700|Inconsolata);
-@import url(jquery-ui.min.css);
-
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif|Raleway:400,300,200,100|Open+Sans:300italic,400italic,700italic,400,300,700|Inconsolata);
 @font-face {
     font-family: 'elementary';
     src: url("/assets/font/elementary.eot");
@@ -8,3 +6,5 @@
     font-weight: normal;
     font-style: normal;
 }
+
+$desktop_width: 768px;

@@ -2,19 +2,81 @@
 * Navigation Bar *
 *****************/
 
+$nav-spacing: 50px;
+
 nav {
-    height: 48px;
-    font-size: 16px;
+    margin: 18px auto;
+    font-size: 18px;
+    overflow: hidden;
 
-    li {
-        display: inline;
+    a {
+        color: #636363;
+        display: block;
 
-        a {
-            display: inline-block;
-            padding: 12px 15px;
+        &.selected, &:hover {
+            color: #000;
+        }
+    }
 
-            &:hover {
-                color: #000;
+    > a {
+        padding: 0 18px;
+    }
+
+    ul {
+        display: none;
+
+        li {
+
+            a {
+                padding: 16px $nav-spacing/2;
+            }
+        }
+    }
+}
+
+@media only screen and (min-width : $desktop_width) {
+    nav {
+        max-width: 960px;
+
+        ul {
+            float: left;
+            display: block;
+            font-size: 14px;
+
+            &:last-child {
+                float: right;
+            }
+
+            li {
+                float: left;
+
+                a {
+
+                    &.selected, &:hover {
+                    }
+                }
+            }
+        }
+
+        > a {
+            display: none;
+        }
+
+        li.home {
+            width: 32px;
+            height: 34px;
+            margin: 4px $nav-spacing/2 0;
+
+            a {
+                width: 32px;
+                height: 34px;
+                background: url(/assets/img/nav-logo.png);
+                padding: 0;
+                text-indent: -9999px;
+            }
+
+            &:hover a {
+                background-position: 0 34px;
             }
         }
     }
