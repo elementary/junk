@@ -1,8 +1,3 @@
-$foundation-mq-medium:  40.063em;
-$foundation-mq-large:   64.063em;
-$foundation-mq-xlarge:  90.063em;
-$foundation-mq-xxlarge: 120.063em;
-
 meta.foundation-version {
   font-family: "/{{ VERSION }}/"; }
 
@@ -11,20 +6,20 @@ meta.foundation-mq-small {
   width: 0em; }
 
 meta.foundation-mq-medium {
-  font-family: "/only screen and (min-width:$foundation-mq-medium)/";
-  width: $foundation-mq-medium; }
+  font-family: "/only screen and (min-width:#{$foundation-lb-medium})/";
+  width: $foundation-lb-medium; }
 
 meta.foundation-mq-large {
-  font-family: "/only screen and (min-width:$foundation-mq-large)/";
-  width: $foundation-mq-large; }
+  font-family: "/only screen and (min-width:#{$foundation-lb-large})/";
+  width: $foundation-lb-large; }
 
 meta.foundation-mq-xlarge {
-  font-family: "/only screen and (min-width:$foundation-mq-xlarge)/";
-  width: $foundation-mq-xlarge; }
+  font-family: "/only screen and (min-width:#{$foundation-lb-xlarge})/";
+  width: $foundation-lb-xlarge; }
 
 meta.foundation-mq-xxlarge {
-  font-family: "/only screen and (min-width:$foundation-mq-xxlarge)/";
-  width: $foundation-mq-xxlarge; }
+  font-family: "/only screen and (min-width:#{$foundation-lb-xxlarge})/";
+  width: $foundation-lb-xxlarge; }
 
 meta.foundation-data-attribute-namespace {
   font-family: false; }
@@ -379,7 +374,7 @@ select {
   .column.small-uncentered.opposite,
   .columns.small-uncentered.opposite {
     float: right; } }
-@media only screen and (min-width: $foundation-mq-medium) {
+@media #{$medium-up} {
   .medium-push-0 {
     position: relative;
     left: 0%;
@@ -729,7 +724,7 @@ select {
     position: relative;
     right: 91.66667%;
     left: auto; } }
-@media only screen and (min-width: $foundation-mq-large) {
+@media #{$large-up} {
   .large-push-0 {
     position: relative;
     left: 0%;
@@ -1190,7 +1185,7 @@ select {
       clear: none; }
     .small-block-grid-12 > li:nth-of-type(12n+1) {
       clear: both; } }
-@media only screen and (min-width: $foundation-mq-medium) {
+@media #{$medium-up} {
   .medium-block-grid-1 > li {
     width: 100%;
     list-style: none; }
@@ -1286,7 +1281,7 @@ select {
       clear: none; }
     .medium-block-grid-12 > li:nth-of-type(12n+1) {
       clear: both; } }
-@media only screen and (min-width: $foundation-mq-large) {
+@media #{$large-up} {
   .large-block-grid-1 > li {
     width: 100%;
     list-style: none; }
