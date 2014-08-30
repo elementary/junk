@@ -14,7 +14,7 @@ $(function () {
             $("html").css("cursor", "auto");
         },
         slide: function(event, ui) {
-            $paymentAmount.val(ui.value);
+            $paymentAmount.val(ui.value + '.00');
         }
     });
     //nav
