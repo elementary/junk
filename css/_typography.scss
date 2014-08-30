@@ -38,6 +38,10 @@ h1, .h1 {
             font-weight: 400;
         }
     }
+    
+    &.title {
+        margin-bottom: 0.6em;
+    }
 
     &.logotype {
         background: url(/assets/img/logotype.svg) no-repeat center;

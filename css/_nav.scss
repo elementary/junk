@@ -5,8 +5,6 @@
 $nav-spacing: 50px;
 
 nav {
-    margin: 18px auto;
-    font-size: 18px;
     overflow: hidden;
 
     a {
@@ -70,7 +68,7 @@ a.navigate-document {
             }
         }
 
-        .row > a {
+        .row > div > a {
             display: none;
         }
 
