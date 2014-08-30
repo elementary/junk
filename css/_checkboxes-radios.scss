@@ -12,6 +12,7 @@ input[type="radio"] {
     height: 14px;
     margin: 0;
     width: 14px;
+    outline: none;
     
     &::before {
         content: ' ';
