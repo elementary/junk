@@ -11,21 +11,19 @@ input[type="radio"] {
     cursor: pointer;
     height: 14px;
     margin: 0;
-    opacity: 0;
     width: 14px;
-}
-
-input[type="checkbox"] + .checkStyle,
-input[type="radio"] + .radioStyle {
-    background: url("/assets/img/form.svg");
-    background-size: 46px 28px;
-    display: inline-block;
-    height: 14px;
-    left: -14px;
-    margin-right: -14px;
-    position: relative;
-    width: 14px;
-    z-index: -1;
+    
+    &::before {
+        content: ' ';
+        background: url("/assets/img/form.svg");
+        background-size: 46px 28px;
+        display: block;
+        height: 14px;
+        margin-right: -14px;
+        position: relative;
+        width: 14px;
+        z-index: 1;
+    }
 }
 
 html.no-svg input[type="checkbox"] + .checkStyle,
@@ -33,14 +31,22 @@ html.no-svg input[type="radio"] + .radioStyle {
     background: url("/assets/img/form.png");
 }
 
-input[type="radio"] + .radioStyle {
-    background-position: 0 -14px;
+input[type="checkbox"] {
+    &::before {
+        background-position: 0 0;
+    }
+    
+    &:checked::before {
+        background-position: -14px 0;
+    }
 }
 
-input[type="checkbox"]:checked + .checkStyle {
-    background-position: -14px 0;
-}
-
-input[type="radio"]:checked + .radioStyle {
-    background-position: -14px -14px;
+input[type="radio"] {
+    &::before {
+        background-position: 0 -14px;
+    }
+    
+    &:checked::before {
+        background-position: -14px -14px;
+    }
 }
