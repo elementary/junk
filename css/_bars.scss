@@ -32,7 +32,7 @@
 }
 
 .ui-slider .ui-slider-handle {
-    background: url("../img/form.svg") -28px 0 no-repeat;
+    background: url("/assets/img/form.svg") -28px 0 no-repeat;
     background-size: 46px 28px;
     cursor: ew-resize;
     display: inline-block;
@@ -44,7 +44,7 @@
 }
 
 html.no-svg .ui-slider .ui-slider-handle {
-    background: url("../img/form.png") -28px 0 no-repeat;
+    background: url("/assets/img/form.png") -28px 0 no-repeat;
 }
 
 .ui-progressbar {

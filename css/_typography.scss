@@ -29,7 +29,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 h1, .h1 {
     font-size: 24pt;
 
-    &.title {
+    &.title, &.logotype {
         font-family: Raleway, sans-serif;
         font-weight: 200;
         font-size: 48pt;
@@ -37,6 +37,14 @@ h1, .h1 {
         strong {
             font-weight: 400;
         }
+    }
+
+    &.logotype {
+        background: url(/assets/img/logotype.svg) no-repeat center;
+        background-size: contain;
+        text-indent: -9999px;
+        overflow: hidden;
+        height: 48px;
     }
 }
 
@@ -184,17 +192,12 @@ blockquote {
     &.traditional {
         border: 0;
         padding: 0;
-        
-        &:before {
-            content: "“" ;
-            float: left;
-            font-size: 40px;
-        }
 
-        &:after {
-            content: "”" ;
-            float: right;
-            font-size: 40px;
+        p {
+            font-size: 18px;
+            font-style: normal;
+            font-family: "Open Sans", serif;
+            line-height: 167%;
         }
     }
 }
