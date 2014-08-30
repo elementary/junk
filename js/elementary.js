@@ -1,4 +1,5 @@
 $(function () {
+    $paymentAmount = $('#paymentAmount');
     // Checkboxes
     $('<span class="checkStyle"></span>').insertAfter('input[type="checkbox"]');
     // Radios
@@ -11,6 +12,9 @@ $(function () {
         },
         stop: function () {
             $("html").css("cursor", "auto");
+        },
+        slide: function(event, ui) {
+            $paymentAmount.val(ui.value);
         }
     });
     //nav
