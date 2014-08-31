@@ -19,10 +19,8 @@
     font-size: 0.8em;
     padding: 6px 18px;
     text-shadow: 0 1px rgba(255, 255, 255, 0.4);
-    
-    a, a:hover, a:active {
-        color: #323232;
-    }
+    color: #323232;
+    display: inline-block;
 
     &:active {
         background-color: rgba(0, 0, 0, 0.05);
@@ -32,7 +30,7 @@
                     0 1px 0 1px rgba(255, 255, 255, 0.30);
     }
 
-    .suggested-action {
+    &.suggested-action {
         background-image: linear-gradient(to bottom, #75C6FD, #53ABE5);
         border-color: #4D9CD1;
         color: #fff;
@@ -43,8 +41,8 @@
             border-color: #4193C9;
         }
     }
-    
-    .destructive-action {
+
+    &.destructive-action {
         background-image: linear-gradient(to bottom,
                                       #f67564,
                                       #cc3443
@@ -52,11 +50,14 @@
         border-color: #a2302e;
         color: #fff;
         text-shadow: 0 1px rgba(0, 0, 0, 0.2);
-        
-        a {
-            color: #fff;
-            text-shadow: 0 1px rgba(0, 0, 0, 0.2);
-        }
+        color: #fff;
+        text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+    }
+
+    &.large-button {
+        padding: 10px 24px;
+        font-size: 16px;
+        border-radius: 5px;
     }
 }
 
@@ -67,16 +68,16 @@
 .button-group {
     display: inline-block;
     overflow: auto;
-    
+
     > .button {
         float: left;
         padding: 6px 18px;
-        
+
         &:not(:first-child) {
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
-        
+
         &:not(:last-child) {
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
