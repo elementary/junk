@@ -49,6 +49,10 @@ h1, .h1 {
         text-indent: -9999px;
         overflow: hidden;
         height: 48px;
+
+        @media #{$medium-up} {
+            height: 64px;
+        }
     }
 }
 
