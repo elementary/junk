@@ -1,0 +1,57 @@
+/*********
+* Footer *
+*********/
+
+.page-container {
+    min-height: 100%;
+    width: 100%;
+    box-shadow: 0px 4px 15px #181818;
+}
+
+footer {
+    background: #333;
+    color: #FFF;
+    padding: 12px 0;
+    position: relative;
+    z-index: -1;
+
+    a {
+        color: #FFF;
+    }
+
+    h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    hr {
+        clear: both;
+        margin: 12px 0;
+    }
+
+    .footer-info {
+        background: url(/assets/img/footer-logo.png) no-repeat;
+        padding-left: 64px;
+    }
+
+    .footer-clear {
+        clear: both;
+    }
+
+    @media #{$small-only} {
+        ul {
+            display: none;
+        }
+    }
+
+    @media #{$large-up} {
+        hr {
+            display: none;
+        }
+
+        .footer-clear {
+            display: none;
+        }
+    }
+}
