@@ -1,15 +1,15 @@
 $(function () {
 
     /*******
-+    * NAV *
-+    *******/
+     * NAV *
+     *******/
 
     $("nav a.nav-current-section").click (function () {
         $("nav ul").toggle ();
         return false;
     });
-    
-    
+
+
     /*****************
      * SMOOTH SCROLL *
      *****************/
