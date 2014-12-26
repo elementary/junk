@@ -3,7 +3,7 @@ import time
 import praw
 
 r = praw.Reddit('elementaryBot v1.0')
-r.login(os.environ['BOT_LOGIN'], os.environ['BOT_PASS'])
+r.login(os.environ['BOT_NAME'], os.environ['BOT_PASS'])
 
 sr = r.get_subreddit(os.environ['SUBREDDIT'])
 bot = r.get_redditor('BOT_NAME')
