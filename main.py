@@ -17,7 +17,7 @@ while True:
                     comment_posted = True
 
             if not comment_posted:
-                submission.add_comment("It appears that you havn't flaired your post. Please click the 'flair' button bellow your post and select the most appropriate label. This helps us keep the subreddit tidy! \n\n **This comment will be deleted when your post is flaired.** \n\n ^Question/Problem? ^Message the moderators!")
+                submission.add_comment(os.environ['MESSAGE'])
 
     for comment in bot.get_comments(limit=10):
         if comment.submission.link_flair_text != None:
