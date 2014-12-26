@@ -6,7 +6,7 @@ r = praw.Reddit('elementaryBot v1.0')
 r.login(os.environ['BOT_NAME'], os.environ['BOT_PASS'])
 
 sr = r.get_subreddit(os.environ['SUBREDDIT'])
-bot = r.get_redditor('BOT_NAME')
+bot = r.get_redditor(os.environ['BOT_NAME'])
 
 while True:
     for submission in sr.get_new(limit=10):
