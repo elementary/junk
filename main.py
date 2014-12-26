@@ -3,10 +3,10 @@ import time
 import praw
 
 r = praw.Reddit('elementaryBot v1.0')
-r.login(os.environ['REDDIT_USER'], os.environ['REDDIT_PASS'])
+r.login(os.environ['BOT_LOGIN'], os.environ['BOT_PASS'])
 
-sr = r.get_subreddit('roryj')
-bot = r.get_redditor('elementaryBot')
+sr = r.get_subreddit(os.environ['SUBREDDIT'])
+bot = r.get_redditor('BOT_NAME')
 
 while True:
     for submission in sr.get_new(limit=10):
