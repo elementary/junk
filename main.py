@@ -23,4 +23,4 @@ while True:
         if comment.submission.link_flair_text != None:
             comment.delete()
 
-    time.sleep(os.environ['TIME_DELAY'])
+    time.sleep(float(os.environ['TIME_DELAY']))
