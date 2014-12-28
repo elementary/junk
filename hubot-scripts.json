@@ -1,4 +1,5 @@
 [
   "janky.coffee",
-  "ackbar.coffee"
+  "ackbar.coffee",
+  "ping.coffee"
 ]
