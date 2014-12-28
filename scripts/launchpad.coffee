@@ -1,6 +1,15 @@
 # Description:
 #   Look for Launchpad urls and convert them to something usable
 #
+# Dependencies:
+# None
+#
+# Commands:
+# report <project> - Send a Link to Bug reporting for <project>
+# lp <project> - Send a Link to the Launchpad <project>
+#
+# Author:
+# fabianthoma <fabian@elementaryos.org>
 
 module.exports = (robot) ->
 
