@@ -21,3 +21,7 @@ module.exports = (robot) ->
 
   robot.respond /lp (.*)/i, (msg) ->
     msg.send "https://launchpad.net/" + msg.match[1]
+
+  robot.router.post "/email-in", (req, res) ->
+    robot.messageRoom "rabbit-testing", req.body.subject
+    res.end "ok"
