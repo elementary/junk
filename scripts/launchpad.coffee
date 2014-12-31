@@ -14,7 +14,7 @@
 module.exports = (robot) ->
 
   robot.hear /(:?bug|\#) *([0-9]+)/i, (msg) ->
-    if parseInt(bug) > 1000
+    if parseInt(msg.match[2]) > 1000
       msg.send "https://bugs.launchpad.net/bugs/" + msg.match[2]
   
   robot.hear /lp:([a-zA-Z0-9\/\-\+\.]+)/i, (msg) ->
