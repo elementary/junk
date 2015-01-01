@@ -3,9 +3,11 @@
 *********/
 
 .page-container {
+    position: relative;
     min-height: 100%;
     width: 100%;
     box-shadow: 0px 4px 15px #181818;
+    background-color: #FFF;
 }
 
 footer {

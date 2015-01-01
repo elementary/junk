@@ -4,33 +4,17 @@
 
 $nav-spacing: 50px;
 
-nav {
-    overflow: hidden;
+$mobile-nav-button-size: 40px;
 
-    a {
-        color: #636363;
-        display: block;
+#nav-sidebar-toggler {
+    display: none;
+}
 
-        &.selected, &:hover {
-            color: #000;
-        }
-    }
-
-    .row > a {
-        padding: 0 18px;
-    }
-
-    ul {
-        display: none;
-
-        li {
-            padding: 16px $nav-spacing/2;
-        }
-    }
+label.nav-sidebar-label {
+    display: none;
 }
 
 a.navigate-document {
-
     color: #636363;
     text-align: center;
     display: block;
@@ -41,6 +25,100 @@ a.navigate-document {
 
     &.selected, &:hover {
         color: #000;
+    }
+}
+
+@media #{$small-only} {
+    body {
+        overflow-x: hidden;
+        z-index: -100;
+    }
+
+    #nav-sidebar-label:before {
+        background: $elementary-blue;
+        color: #FFF;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        height: $mobile-nav-button-size;
+        width: $mobile-nav-button-size;
+        z-index: 99;
+        display: block;
+
+        content: "\4d";
+        font-family: 'elementary';
+        speak: none;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: $mobile-nav-button-size;
+        text-align: center;
+
+    }
+
+    #nav-sidebar-toggler {
+        display: block;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        height: $mobile-nav-button-size;
+        width: $mobile-nav-button-size;
+        z-index: 100;
+        opacity: 0;
+        cursor: pointer;
+
+        &:checked {
+            left: 200px;
+
+            & ~ #nav-sidebar-label:before {
+                content: "\4c";
+                left: 200px;
+            }
+
+            & ~ .page-container,
+            & ~ footer {
+                left: 200px;
+            }
+        }
+    }
+
+    nav {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        width: 200px;
+        z-index: -1;
+        background: #333;
+
+        .columns {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        ul {
+
+            li {
+                display: block;
+                border-bottom: 1px solid lightgrey;
+            }
+        }
+
+        a {
+            color:   rgba(255,255,255,0.9);
+            padding: 10px $nav-spacing/2;
+            display: block;
+            
+            &:hover {
+                color:   rgba(255,255,255,1);
+            }
+
+            &.selected {
+                font-weight: bold;
+            }
+        }
     }
 }
 
@@ -58,6 +136,7 @@ a.navigate-document {
             }
 
             li {
+                padding: 16px $nav-spacing/2;
                 float: left;
 
                 a {
@@ -68,8 +147,14 @@ a.navigate-document {
             }
         }
 
-        .row > div > a {
-            display: none;
+        a {
+            padding: 0 18px;
+            color: #636363;
+            display: block;
+
+            &.selected, &:hover {
+                color: #000;
+            }
         }
 
         li.home {
