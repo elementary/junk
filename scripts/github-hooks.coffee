@@ -4,5 +4,5 @@ module.exports = (robot) ->
     event = req.get 'X-Github-Event'
     signature = req.get 'X-Hub-Signature'
     //TODO: Add validation of signature
-    @robot.emit 'gh_' + event, req.body
+    @robot.emit "gh_#{event}", req.body
     res.end "ok"
