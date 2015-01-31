@@ -5,9 +5,9 @@
   "author": "elementary",
   "description": "Little bunny that makes everyone happy.",
   "dependencies": {
-    "hubot-maps": "0.0.0",
+    "hubot-maps": "0.0.1",
     "hubot-help": "~0.1.1",
-    "hubot-google-images": "~0.1.1",
+    "hubot-google-images": "~0.1.2",
     "hubot-diagnostics": "0.0.1",
     "hubot-youtube": "~0.1.2",
     "hubot-pugme": "~0.1.0",
@@ -17,8 +17,8 @@
     "hubot-shipit": "~0.1.1",
     "hubot-redis-brain": "0.0.2",
     "hubot-scripts": "~2.5.16",
-    "hubot-slack": "~3.1.0",
-    "hubot": "~2.10.0"
+    "hubot-slack": "~3.2.1",
+    "hubot": "~2.11.0"
   },
   "engines": {
     "node": "0.10.x"
