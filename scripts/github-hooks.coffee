@@ -11,4 +11,4 @@ module.exports = (robot) ->
     robot.messageRoom "rabbit-testing", "#{data.action}: #{data.pull_request.title}"
 
   robot.on "gh_push", (data) ->
-    robot.messageRoom "rabbit-testing", "#{data.size} new commits in #{data.repository.full_name} #{data.ref}"
+    robot.messageRoom "rabbit-testing", "new commits in #{data.repository.full_name} #{data.ref}"
