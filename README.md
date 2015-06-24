@@ -4,7 +4,7 @@
     (o.o) ---- Let's get some work done
     (")(")
     
-RabbitBot is a chat bot built on the [Hubot][hubot] framework. It's deployed on our own Servers and provides information and support in our chatrooms on slack.
+RabbitBot is a chat bot built on the [Hubot](https://hubot.github.com/) framework. It's deployed on our own Servers and provides information and support in our chatrooms on slack.
 
 To get RabbitBot into your Slack channel, just invite him there, he'll happily join you.
 
