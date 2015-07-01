@@ -23,7 +23,7 @@ module.exports = (robot) ->
 
     # end if secret is not set
     if !process.env.GITHUB_WEBHOOK_SECRET
-      messageRoom "rabbit-testing", "Please set GITHUB_WEBHOOK_SECRET for me" +
+      robot.messageRoom room, "Please set GITHUB_WEBHOOK_SECRET for me" +
       "to secure webhooks"
       return res.end "ok"
 
@@ -43,12 +43,14 @@ module.exports = (robot) ->
       " webhook. The request IP was #{ip}"
       res.end 'LOL! Idiot. These webhooks are secure.'
 
+
+# This is just for debug purposes
   robot.on "gh_pull_request", (data) ->
-    robot.messageRoom logs, "#{data.action}: " +
+    robot.messageRoom room, "#{data.action}: " +
     "#{data.pull_request.title}"
 
   robot.on "gh_push", (data) ->
-    robot.messageRoom logs, "New commits in " +
+    robot.messageRoom room, "New commits in " +
     "#{data.repository.full_name} #{data.ref}\n" +
     "HEAD is now at #{data.head_commit.id.substring(0,8)} " +
     "by #{data.head_commit.author.name} <#{data.head_commit.author.email}>\n" +
