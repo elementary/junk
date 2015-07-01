@@ -13,7 +13,6 @@
 secret = process.env.GITHUB_WEBHOOK_SECRET
 crypto = require 'crypto'
 bufferEq = require 'buffer-equal-constant-time'
-ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 
 room = "rabbit-testing"
 
