@@ -40,7 +40,7 @@ module.exports = (robot) ->
       res.end "ok"
     else
       robot.messageRoom room, "LOL: Some idiot tried forging a *Github*" +
-      " webhook. The request IP was #{ip}"
+      " webhook. The request IP was #{ip}, The repository #{payload.repository.full_name}"
       res.end 'LOL! Idiot. These webhooks are secure.'
 
 
