@@ -1,6 +1,6 @@
 # elementary CSS
 
-elementary CSS is a CSS framework based on the design of [elementary OS](http://elementaryos.org/), a free and open source OS.
+elementary CSS is a CSS framework based on the design of [elementary OS](http://elementary.io/), a free and open source OS.
 
 For more elementary design, visit the [#elementaryOS](http://elementaryos.deviantart.com/) group on deviantART.
 
