@@ -14,7 +14,7 @@ module.exports = (robot) ->
             robot.messageRoom "web", "Build of MVP successfull: #{req.body.build.full_url}"
           else
             robot.messageRoom "web", "Build of MVP failed: #{req.body.build.full_url}"
-            robot.messageRoom "web", '```' + req.body.build.log + '```'
+            #robot.messageRoom "web", '```' + req.body.build.log + '```'
         else
           if req.body.build.status == "FAILURE"
             robot.messageRoom "jenkins", "Build of #{req.body.name} failed: #{req.body.build.full_url}"
