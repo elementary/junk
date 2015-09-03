@@ -63,6 +63,10 @@ module.exports = (robot) ->
     files = files.filter (path, index, orgArr) ->
       !( path.trim() == "" or !/(\/[-\w~,;\.\/?%&+=]*)/i.test(path) )
 
+    if files.length < 1
+      msg.reply "Could you tell me which files to purge? Usage: `cf purge </path> (/paths...)`"
+      return
+
     # CF needs files to be with the FQDN
     for path,index in files
       if path.indexOf "http" != 0
