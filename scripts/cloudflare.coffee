@@ -79,7 +79,7 @@ module.exports = (robot) ->
         msg.reply "Error while retriving zone: " + err
         return
 
-      for filess in files
+      for files_chunk in files
         options =
           url: "https://api.cloudflare.com/client/v4/zones/" + zoneID + "/purge_cache"
           headers: 
@@ -87,14 +87,14 @@ module.exports = (robot) ->
             "X-Auth-Email": CF_email
           json: true
           body: 
-            "files": filess
+            "files": files_chunk
 
         r.del options, (err, resp, body) ->
           if err
             msg.reply "Can't do that now: " + err
           else
             if body.success
-              msg.send "cloudflare cache purged of " + filess.join(", ")
+              msg.send "cloudflare cache purged of " + files_chunk.join(", ")
             else
               errorStr = ""
               body.errors.map (error) ->
