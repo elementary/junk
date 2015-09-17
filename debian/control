@@ -6,7 +6,7 @@ Build-Depends: cmake (>= 2.8),
                debhelper (>= 8.0.0),
                libglib2.0-dev,
                libgranite-dev,
-               valac-0.16 | valac (>= 0.16)
+               valac
 Standards-Version: 3.9.3
 Vcs-Bzr: lp:~elementary-os/elementaryos/user-specific-alternatives
 
