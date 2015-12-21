@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: cmake-elementary
-Source: https://code.launchpad.net/~elementary-apps/+junk/cmake-modules
+Source: https://code.launchpad.net/~elementary-os/+junk/cmake-modules
 
 Files: src/FindGirCompiler.cmake
        src/FindVala.cmake

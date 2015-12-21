@@ -5,8 +5,8 @@ Maintainer: Corentin Noël <corentin@elementary.io>
 Build-Depends: cmake,
                debhelper (>= 9),
 Standards-Version: 3.9.5
-Homepage: https://code.launchpad.net/~elementary-apps/+junk/cmake-modules
-Vcs-Bzr: lp:~elementary-apps/+junk/cmake-modules
+Homepage: https://code.launchpad.net/~elementary-os/+junk/cmake-modules
+Vcs-Bzr: lp:~elementary-os/+junk/cmake-modules
 
 Package: cmake-elementary
 Architecture: all
