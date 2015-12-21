@@ -1,6 +1,6 @@
 ##
 # Copyright 2009-2010 Jakob Westhoff. All rights reserved.
-# Copyright 2012 elementary.
+# Copyright 2012-2016 elementary LLC.
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
