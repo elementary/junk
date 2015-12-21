@@ -1,4 +1,5 @@
 # Translations.cmake, CMake macros written for Marlin, feel free to re-use them
+include(CMakeParseArguments)
 
 macro (add_translations_directory NLS_PACKAGE)
     add_custom_target (i18n ALL COMMENT “Building i18n messages.”)
@@ -106,7 +107,7 @@ macro (configure_file_translation SOURCE RESULT PO_DIR)
 endmacro ()
 
 macro (add_translations_catalog NLS_PACKAGE)
-    parse_arguments(ARGS "DESKTOP_FILES;APPDATA_FILES;SCHEMA_FILES" "" ${ARGN})
+    cmake_parse_arguments (ARGS "" "" "DESKTOP_FILES;APPDATA_FILES;SCHEMA_FILES" ${ARGN})
     add_custom_target (pot COMMENT “Building translation catalog.”)
     find_program (XGETTEXT_EXECUTABLE xgettext)
     find_program (INTLTOOL_EXTRACT_EXECUTABLE intltool-extract)
@@ -116,10 +117,6 @@ macro (add_translations_catalog NLS_PACKAGE)
     set(C_SOURCE "")
     set(VALA_SOURCE "")
     set(GLADE_SOURCE "")
-
-    set(APPDATA_SOURCE "")
-    set(DESKTOP_SOURCE "")
-    set(SCHEMA_SOURCE "")
 
     foreach(FILES_INPUT ${ARGN})
         if((${FILES_INPUT} MATCHES ${CMAKE_SOURCE_DIR}) OR (${FILES_INPUT} MATCHES ${CMAKE_BINARY_DIR}))
@@ -142,14 +139,6 @@ macro (add_translations_catalog NLS_PACKAGE)
         foreach(GLADE_FILE ${SOURCE_FILES})
             set(GLADE_SOURCE ${GLADE_SOURCE} ${GLADE_FILE})
         endforeach()
-    endforeach()
-
-    foreach(FILES_INPUT ${ARGS_APPDATA_FILES})
-        set(APPDATA_SOURCE ${APPDATA_SOURCE} ${FILES_INPUT})
-    endforeach()
-
-    foreach(FILES_INPUT ${ARGS_SCHEMA_FILES})
-        set(SCHEMA_SOURCE ${SCHEMA_SOURCE} ${FILES_INPUT})
     endforeach()
 
     set (XGETTEXT_C_ARGS --add-comments="/" --keyword="_" --keyword="N_" --keyword="C_:1c,2" --keyword="NC_:1c,2" --keyword="ngettext:1,2" --keyword="Q_:1g")
