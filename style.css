@@ -1,0 +1,113 @@
+body{
+	background:#333;
+	
+	background-image:-webkit-radial-gradient(50% 40%,ellipse closest-side,#555,#333 80%);
+	background-image:-moz-radial-gradient(50% 40%,ellipse closest-side,#555,#333 80%);
+	background-image:-o-radial-gradient(50% 40%,ellipse closest-side,#555,#333 80%);
+	background-image:-ms-radial-gradient(50% 40%,ellipse closest-side,#555,#333 80%);
+	background-image:radial-gradient(50% 40%,ellipse closest-side,#555,#333 80%);
+	
+	color:#eee;
+	text-align:center;
+	font:12pt 'Droid Sans',sans-serif;
+}
+
+a{
+	color:#08c!important;
+}
+
+header h1,span.instructions{
+	margin:0 auto;
+	padding:24px;
+	font-weight:normal;
+	background:rgba(0,0,0,.15);
+	
+	-webkit-text-shadow:0 1px 7px rgba(0,0,0,.7);
+	-moz-text-shadow:0 1px 7px rgba(0,0,0,.7);
+	-o-text-shadow:0 1px 7px rgba(0,0,0,.7);
+	-ms-text-shadow:0 1px 7px rgba(0,0,0,.7);
+	text-shadow:0 1px 7px rgba(0,0,0,.7);
+	
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-ms-border-radius:4px;
+	border-radius:4px;
+	
+	border-top:1px solid rgba(255,255,255,.1);
+	border-right:1px solid rgba(255,255,255,.07);
+	border-bottom:1px solid rgba(255,255,255,.15);
+	border-left:1px solid rgba(255,255,255,.07);
+	
+	-webkit-box-shadow:0 0 3px 0 rgba(0,0,0,.5) inset;
+	-moz-box-shadow:0 0 3px 0 rgba(0,0,0,.5) inset;
+	-o-box-shadow:0 0 3px 0 rgba(0,0,0,.5) inset;
+	-ms-box-shadow:0 0 3px 0 rgba(0,0,0,.5) inset;
+	box-shadow:0 0 3px 0 rgba(0,0,0,.5) inset;
+}
+
+	header h1{
+		width:448px;
+		margin:48px auto 24px;
+	}
+	
+	span.instructions{
+		display:block;
+		clear:both;
+		width:350px;
+
+	}
+		span.instructions p{
+			margin:12px 0;
+			padding:0;
+		}
+
+section{
+	width:1240px; /* 3.2x + margin + padding */
+	margin:0 auto;
+}
+
+a.photo{
+	width:600px; /* 1.6x */
+	height:375px;/* x */
+	padding:4px;
+	margin:24px 6px 48px;
+	display:block;
+	float:left;
+	background-color:#fff;
+	background-position:4px 4px;
+	background-repeat:no-repeat;
+	
+	-webkit-background-size:600px 375px;
+	-moz-background-size:600px 375px;
+	-o-background-size:600px 375px;
+	-ms-background-size:600px 375px;
+	background-size:600px 375px;
+	
+	-webkit-box-shadow:0 1px 8px rgba(0,0,0,.75);
+	-moz-box-shadow:0 1px 8px rgba(0,0,0,.75);
+	-o-box-shadow:0 1px 8px rgba(0,0,0,.75);
+	-ms-box-shadow:0 1px 8px rgba(0,0,0,.75);
+	box-shadow:0 1px 8px rgba(0,0,0,.75);
+	
+	-webkit-transition:all .2s ease;
+	-moz-transition:all .2s ease;
+	-o-transition:all .2s ease;
+	-ms-transition:all .2s ease;
+	transition:all .2s ease;
+}
+
+	a.photo:hover{
+		background-color:#08C;
+		
+		-webkit-box-shadow:0 4px 8px rgba(0,0,0,.75);
+		-moz-box-shadow:0 4px 8px rgba(0,0,0,.75);
+		-o-box-shadow:0 4px 8px rgba(0,0,0,.75);
+		-ms-box-shadow:0 4px 8px rgba(0,0,0,.75);
+		box-shadow:0 4px 8px rgba(0,0,0,.75);
+		
+		position:relative;
+		bottom:3px;
+	}
+
+
