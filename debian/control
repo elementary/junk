@@ -11,6 +11,6 @@ Vcs-Bzr: lp:~elementary-os/+junk/cmake-modules
 Package: cmake-elementary
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, intltool
 Description: Extra CMake utility modules for elementary.
  Includes modules for Vala and translations.
