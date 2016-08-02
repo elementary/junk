@@ -92,8 +92,8 @@ macro (configure_file_translation SOURCE RESULT PO_DIR)
     get_filename_component(EXTRA_PO_DIR ${EXTRA_PO_DIR} ABSOLUTE)
 
     # Intltool can't create a new directory.
-    get_filename_component(SOURCE_DIRECTORY ${SOURCE} DIRECTORY)
-    file(MAKE_DIRECTORY ${SOURCE_DIRECTORY})
+    get_filename_component(RESULT_DIRECTORY ${RESULT} DIRECTORY)
+    file(MAKE_DIRECTORY ${RESULT_DIRECTORY})
 
     set (INTLTOOL_FLAG "")
     if (${SOURCE} MATCHES ".desktop")
