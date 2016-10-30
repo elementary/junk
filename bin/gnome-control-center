@@ -1,20 +1,65 @@
 #!/bin/bash
 
-# Compatibily layer that redirects gnome-control-center calls to switchboard
+# Compatibily layer that redirects gnome-control-center calls to the standard call
 # Copyright: 2013 Sergey "Shnatsel" Davidoff <sergey@elementaryos.org>
 # License: GNU GPL 2.0+
 
 # parse command-line options
 while true; do
 if [ "${1#-}" = "$1" ] && [ -n "$1" ]; then
-    # not prefixed with "-", should be the panel name
-    requested_plug="$1"
+    case "$1" in
+        background)
+            requested_setting="wallpaper"
+            ;;
+        bluetooth)
+            requested_setting="network/bluetooth"
+            ;;
+        color)
+            requested_setting="display/color"
+            ;;
+        datetime)
+            requested_setting="date"
+            ;;
+        display)
+            requested_setting="display"
+            ;;
+        keyboard)
+            requested_setting="input/keyboard"
+            ;;
+        mouse)
+            requested_setting="input/mouse"
+            ;;
+        online-accounts)
+            requested_setting="accounts/online"
+            ;;
+        printers)
+            requested_setting="printer"
+            ;;
+        privacy)
+            requested_setting="security/privacy"
+            ;;
+        region)
+            requested_setting="language"
+            ;;
+        sharing)
+            requested_setting="network/share"
+            ;;
+        user-accounts)
+            requested_setting="accounts"
+            ;;
+        wacom)
+            requested_setting="input/wacom"
+            ;;
+        *)
+            requested_setting="$1"
+            ;;
+    esac
 elif [ "$1" = '-v' ] || [ "$1" = '--verbose' ] || [ "$1" = '-o' ] || [ "$1" = '--overview' ]; then
     : # do nothing, Switchboard doesn't support these parameters
 else
-    switchboard_options="$switchboard_options $1"
+    app_options="$app_options $1"
 fi
 shift 2>/dev/null || break
 done
 
-switchboard $switchboard_options $requested_plug
+xdg-open settings://$requested_setting $app_options
