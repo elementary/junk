@@ -111,8 +111,12 @@ macro (add_translations_catalog NLS_PACKAGE)
     add_custom_target (pot COMMENT “Building translation catalog.”)
     find_program (XGETTEXT_EXECUTABLE xgettext)
     find_program (INTLTOOL_EXTRACT_EXECUTABLE intltool-extract)
+    find_program (MSG_MERGE intltool-extract)
 
     set(EXTRA_PO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extra)
+
+    set(TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot)
+    set(EXTRA_TEMPLATE ${EXTRA_PO_DIR}/extra.pot)
 
     set(C_SOURCE "")
     set(VALA_SOURCE "")
@@ -144,12 +148,12 @@ macro (add_translations_catalog NLS_PACKAGE)
     set (XGETTEXT_C_ARGS --add-comments="/" --keyword="_" --keyword="N_" --keyword="C_:1c,2" --keyword="NC_:1c,2" --keyword="ngettext:1,2" --keyword="Q_:1g")
     set(BASE_XGETTEXT_COMMAND
         ${XGETTEXT_EXECUTABLE} -d ${NLS_PACKAGE}
-        -o ${CMAKE_CURRENT_SOURCE_DIR}/${NLS_PACKAGE}.pot
+        -o ${TEMPLATE}
         ${XGETTEXT_C_ARGS} --from-code=UTF-8)
 
     set(EXTRA_XGETTEXT_COMMAND
         ${XGETTEXT_EXECUTABLE} -d extra
-        -o ${EXTRA_PO_DIR}/extra.pot --no-location --from-code=UTF-8)
+        -o ${EXTRA_TEMPLATE} --no-location --from-code=UTF-8)
 
     set (INTLTOOL_EXTRACT_COMMAND
         ${INTLTOOL_EXTRACT_EXECUTABLE} --local --srcdir=/)
@@ -169,6 +173,15 @@ macro (add_translations_catalog NLS_PACKAGE)
     IF(NOT "${GLADE_SOURCE}" STREQUAL "")
         add_custom_command (TARGET pot WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${BASE_XGETTEXT_COMMAND} ${CONTINUE_FLAG} -LGlade ${GLADE_SOURCE})
     ENDIF()
+    # Then we have to update all the .po files
+    add_custom_target (po COMMENT “Syncing translation files.”)
+    add_dependencies (po pot)
+    file (GLOB PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.po)
+    foreach (PO_INPUT ${PO_FILES})
+        get_filename_component (PO_INPUT_BASE ${PO_INPUT} NAME)
+        add_custom_command (TARGET po COMMAND WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${MSG_MERGE} --update ${PO_INPUT_BASE} ${TEMPLATE})
+    endforeach (PO_INPUT ${PO_FILES})
+    
 
     # We need to create the directory if one extra content exists.
     IF((NOT "${ARGS_DESKTOP_FILES}" STREQUAL "") OR (NOT "${ARGS_APPDATA_SOURCE}" STREQUAL "") OR (NOT "${ARGS_SCHEMA_SOURCE}" STREQUAL ""))
@@ -200,4 +213,10 @@ macro (add_translations_catalog NLS_PACKAGE)
         add_custom_command(TARGET pot WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${EXTRA_XGETTEXT_COMMAND} ${CONTINUE_FLAG} ${XGETTEXT_C_ARGS} ${CMAKE_CURRENT_BINARY_DIR}/tmp/${SCHEMA_SOURCE_NAME}.h)
         set(CONTINUE_FLAG "-j")
     endforeach()
+
+    file (GLOB PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/extra/*.po)
+    foreach (PO_INPUT ${PO_FILES})
+        get_filename_component (PO_INPUT_BASE ${PO_INPUT} NAME)
+        add_custom_command (TARGET po COMMAND WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${MSG_MERGE} --update ${PO_INPUT_BASE} ${EXTRA_TEMPLATE})
+    endforeach (PO_INPUT ${PO_FILES})
 endmacro ()
