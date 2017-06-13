@@ -34,26 +34,63 @@ if (substr_count($app, '.') < 3) {
 <head>
   <title>elementary AppCenter</title>
 
+  <link rel="stylesheet" type="text/css" media="all" href="https://fonts.googleapis.com/css?family=Open+Sans:300">
+
   <style>
+    @-webkit-keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
     html,
     body {
       margin: 0;
       padding: 0;
     }
 
+    h1 {
+      -webkit-animation: 1s ease 2s 1 normal forwards running fade;
+              animation: 1s ease 2s 1 normal forwards running fade;
+      color: #333;
+      font-family: "Open Sans", Helvetica, sans-serif;
+      font-size: 26px;
+      font-weight: 100;
+      margin-top: 16px;
+      opacity: 0;
+    }
+
     main {
       -ms-flex-line-pack: center;
-           align-content: center;
+          align-content: center;
       -webkit-box-align: center;
-         -ms-flex-align: center;
-            align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: column;
+              flex-direction: column;
       height: 100vh;
       -webkit-box-pack: center;
-         -ms-flex-pack: center;
-       justify-content: center;
+          -ms-flex-pack: center;
+              justify-content: center;
       width: 100vw;
     }
   </style>
@@ -61,15 +98,20 @@ if (substr_count($app, '.') < 3) {
 <body>
   <main>
     <img src="/appcenter.png" alt="appcenter"/>
+    <h1>Redirecting</h1>
   </main>
 
   <footer>
     <script>
-      var isElementary = (navigator.userAgent.indexOf('elementary') !== -1)
+      var title = document.getElementsByTagName('h1')[0]
+      var userAgent = navigator.userAgent.toLowerCase()
+      var isLinux = (userAgent.indexOf('linux') !== -1 || userAgent.indexOf('elementary') !== -1)
 
-      if (isElementary) {
+      if (isLinux) {
+        title.innerHTML = 'Redirecting to AppCenter'
         window.location = 'appstream://<?php echo $app ?>'
       } else {
+        title.innerHTML = 'Redirecting to elementary.io'
         window.location = '<?php echo $redirectUrl ?>'
       }
     </script>
