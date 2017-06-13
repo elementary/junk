@@ -70,6 +70,7 @@ if (substr_count($app, '.') < 3) {
       font-family: "Open Sans", Helvetica, sans-serif;
       font-size: 26px;
       font-weight: 100;
+      text-align: center;
       margin-top: 16px;
       opacity: 0;
     }
@@ -108,7 +109,7 @@ if (substr_count($app, '.') < 3) {
       var isLinux = (userAgent.indexOf('linux') !== -1 || userAgent.indexOf('elementary') !== -1)
 
       if (isLinux) {
-        title.innerHTML = 'Redirecting to AppCenter'
+        title.innerHTML = 'Opening AppCenter<br />You can safely hit back or close this tab.'
         window.location = 'appstream://<?php echo $app ?>'
       } else {
         title.innerHTML = 'Redirecting to elementary.io'
