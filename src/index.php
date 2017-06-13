@@ -59,6 +59,9 @@ if (substr_count($app, '.') < 3) {
 
     html,
     body {
+      color: #333;
+      font-family: "Open Sans", Helvetica, sans-serif;
+      text-align: center;
       margin: 0;
       padding: 0;
     }
@@ -66,15 +69,21 @@ if (substr_count($app, '.') < 3) {
     h1 {
       -webkit-animation: 1s ease 2s 1 normal forwards running fade;
               animation: 1s ease 2s 1 normal forwards running fade;
-      color: #333;
-      font-family: "Open Sans", Helvetica, sans-serif;
       font-size: 26px;
       font-weight: 100;
-      text-align: center;
       margin-top: 16px;
       opacity: 0;
     }
 
+    h3 {
+      -webkit-animation: 1s ease 2.5s 1 normal forwards running fade;
+              animation: 1s ease 2.5s 1 normal forwards running fade;
+      font-size: 18px;
+      font-weight: 100;
+      margin-top: 8px;
+      opacity: 0;
+    }
+    
     main {
       -ms-flex-line-pack: center;
           align-content: center;
@@ -99,20 +108,19 @@ if (substr_count($app, '.') < 3) {
 <body>
   <main>
     <img src="/appcenter.png" alt="appcenter"/>
-    <h1>Redirecting</h1>
   </main>
 
   <footer>
     <script>
-      var title = document.getElementsByTagName('h1')[0]
+      var title = document.getElementsByTagName('main')[0]
       var userAgent = navigator.userAgent.toLowerCase()
       var isLinux = (userAgent.indexOf('linux') !== -1 || userAgent.indexOf('elementary') !== -1)
 
       if (isLinux) {
-        title.innerHTML = 'Opening AppCenter<br />You can safely hit back or close this tab.'
+        title.innerHTML += '<h1>Opening AppCenter</h1><h3>You can safely hit back or close this tab.</h3>'
         window.location = 'appstream://<?php echo $app ?>'
       } else {
-        title.innerHTML = 'Redirecting to elementary.io'
+        title.innerHTML += '<h1>Redirecting to elementary.io</h1>'
         window.location = '<?php echo $redirectUrl ?>'
       }
     </script>
