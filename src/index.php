@@ -67,20 +67,28 @@ if (substr_count($app, '.') < 3) {
     }
 
     h1 {
-      -webkit-animation: 1s ease 2s 1 normal forwards running fade;
-              animation: 1s ease 2s 1 normal forwards running fade;
+      -webkit-animation: 1s ease 1s 1 normal forwards running fade;
+              animation: 1s ease 1s 1 normal forwards running fade;
       font-size: 26px;
       font-weight: 100;
-      margin-top: 16px;
+      margin-top: 12px;
+      margin-bottom: 12px;
       opacity: 0;
     }
 
     h3 {
-      -webkit-animation: 1s ease 2.5s 1 normal forwards running fade;
-              animation: 1s ease 2.5s 1 normal forwards running fade;
+      -webkit-animation: 1s ease 1.5s 1 normal forwards running fade;
+              animation: 1s ease 1.5s 1 normal forwards running fade;
       font-size: 18px;
       font-weight: 100;
-      margin-top: 8px;
+      margin-top: 0px;
+      opacity: 0;
+    }
+
+    p {
+      -webkit-animation: 1s ease 2s 1 normal forwards running fade;
+              animation: 1s ease 2s 1 normal forwards running fade;
+      color: #555761;
       opacity: 0;
     }
     
@@ -117,7 +125,7 @@ if (substr_count($app, '.') < 3) {
       var isLinux = (userAgent.indexOf('linux') !== -1 || userAgent.indexOf('elementary') !== -1)
 
       if (isLinux) {
-        title.innerHTML += '<h1>Opening AppCenter</h1><h3>You can safely hit back or close this tab.</h3>'
+        title.innerHTML += '<h1>Opening AppCenter</h1><h3>You can safely hit back or close this tab.</h3><p>Not on elementary OS? <a href="https://elementary.io">Download it here.</a></p>'
         window.location = 'appstream://<?php echo $app ?>'
       } else {
         title.innerHTML += '<h1>Redirecting to elementary.io</h1>'
