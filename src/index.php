@@ -22,11 +22,6 @@ if (substr($app, -8) !== '.desktop') {
   $app = $app . '.desktop';
 }
 
-if (substr_count($app, '.') < 3) {
-  header('Location: '.$redirectUrl);
-  exit();
-}
-
 ?>
 
 <!doctype html>
