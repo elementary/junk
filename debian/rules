@@ -1,3 +1,9 @@
 #!/usr/bin/make -f
 %:
 	dh $@ --fail-missing
+
+CMAKE_VERSION=$(shell dpkg-query --show --showformat='$${version}' cmake | cut -f1,2 -d.)
+
+override_dh_gencontrol:
+	dh_gencontrol -- \
+		-Vcmake:Version=$(CMAKE_VERSION) -Vcmake:nextMajor=$(CMAKE_VERSION).z
