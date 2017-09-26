@@ -19,7 +19,9 @@ public class SideLoad.MainWindow : Gtk.Dialog {
     public MainWindow () {
         Object (
             deletable: false,
-            resizable: false
+            resizable: false,
+            skip_pager_hint: true,
+            skip_taskbar_hint: true
         );
     }
 
