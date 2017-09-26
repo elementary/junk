@@ -1,0 +1,68 @@
+name: camera
+version: '1.0.0'
+summary: Create simple and beautiful presentations on the Linux desktop
+description: |
+  camera is a modern and intuitive desktop presentation app based
+  upon SpiceOfDesign's presentation concept. Built from the ground up
+  for elementary OS, it gives you everything you need to create simple
+  and beautiful presentations.
+
+grade: stable
+confinement: strict
+
+plugs:
+  elementary-platform-loki:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: elementary-platform-loki:elementary-platform-loki
+
+slots:
+  camera:
+    interface: dbus
+    bus: session
+    name: org.pantheon.camera
+
+apps:
+  camera:
+    command: desktop-launch $SNAP/bin/pantheon-camera
+    plugs:
+      - hardware
+      - x11
+      - unity7
+      - home
+      - gsettings
+      - pulseaudio
+      - opengl
+
+parts:
+  elementary:
+    plugin: nil
+    prepare: |
+      add-apt-repository -y ppa:elementary-os/stable
+      add-apt-repository -y ppa:elementary-os/os-patches
+      echo "Package: *" > /etc/apt/preferences.d/elementary-stable
+      echo "Pin: release o=LP-PPA-elementary-os-stable" >> /etc/apt/preferences.d/elementary-stable
+      echo "Pin-Priority: 1000" >> /etc/apt/preferences.d/elementary-stable
+      echo "Package: *" > /etc/apt/preferences.d/elementary-patches
+      echo "Pin: release o=LP-PPA-elementary-os-os-patches" >> /etc/apt/preferences.d/elementary-patches
+      echo "Pin-Priority: 1000" >> /etc/apt/preferences.d/elementary-patches
+      apt update
+      apt dist-upgrade -y
+  camera:
+    build-attributes: [no-system-libraries]
+    after: [elementary, desktop-gnome-platform]
+    plugin: cmake
+#    meson-parameters: [--prefix=/usr]
+    source: .
+    build-packages:
+      - appstream
+      - intltool
+      - libclutter-gst-3.0-dev
+      - libclutter-gtk-1.0-dev
+      - libgranite-dev
+      - libgtk-3-dev
+      - valac
+      - desktop-file-utils
+      - libcanberra-dev
+    organize:
+      share/glib-2.0: usr/share/glib-2.0
