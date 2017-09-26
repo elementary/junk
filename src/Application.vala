@@ -17,7 +17,7 @@
 
 public class SideLoad.App :Gtk.Application {
     construct {
-        application_id = "io.elementary.snapload";
+        application_id = "io.elementary.sideload";
         flags = ApplicationFlags.FLAGS_NONE;
         Intl.setlocale (LocaleCategory.ALL, "");
     }
