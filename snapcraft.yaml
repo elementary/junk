@@ -1,4 +1,4 @@
-name: camera
+name: pantheon-camera
 version: '1.0.0'
 summary: Create simple and beautiful presentations on the Linux desktop
 description: |
@@ -17,16 +17,16 @@ plugs:
     default-provider: elementary-platform-loki:elementary-platform-loki
 
 slots:
-  camera:
+  pantheon-camera:
     interface: dbus
     bus: session
     name: org.pantheon.camera
 
 apps:
-  camera:
+  pantheon-camera:
     command: desktop-launch $SNAP/bin/pantheon-camera
     plugs:
-      - hardware
+      - camera
       - x11
       - unity7
       - home
@@ -48,7 +48,7 @@ parts:
       echo "Pin-Priority: 1000" >> /etc/apt/preferences.d/elementary-patches
       apt update
       apt dist-upgrade -y
-  camera:
+  pantheon-camera:
     build-attributes: [no-system-libraries]
     after: [elementary, desktop-gnome-platform]
     plugin: cmake
@@ -64,5 +64,7 @@ parts:
       - valac
       - desktop-file-utils
       - libcanberra-dev
+#    stage-packages:
+#      - libgstreamer-plugins-base1.0-0
     organize:
       share/glib-2.0: usr/share/glib-2.0
