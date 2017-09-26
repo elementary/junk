@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Application Sideloader
+Exec=io.elementary.sideload %U
+Terminal=false
+MimeType=application/vnd.snap;
+NoDisplay=true
+StartupNotify=true
+X-GNOME-Gettext-Domain=io.elementary.sideload

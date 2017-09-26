@@ -17,3 +17,5 @@ executable(
     ],
     install : true
 )
+
+subdir('data')
