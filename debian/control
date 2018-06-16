@@ -1,0 +1,15 @@
+Source: disable-intel-microcode
+Section: misc
+Priority: optional
+Maintainer: Cody Garver <cody@elementary.io>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.1
+Homepage: https://elementary.io
+
+Package: disable-intel-microcode
+Architecture: i386 amd64 x32
+Depends: ${misc:Depends}, initramfs-tools
+Description: Disable intel-microcode initramfs hook
+ This package temporarily disables intel-microcode's
+ initramfs hook to ensure the integrity of initrd.img
+ for the live image.
