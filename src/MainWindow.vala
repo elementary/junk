@@ -33,6 +33,11 @@ public class MainWindow : Gtk.ApplicationWindow {
 
         var stack = new Gtk.Stack ();
         stack.add_titled (new ElementsView (), "objects", "Objects");
+        stack.add_titled (new Gtk.Grid (), "stats", "Statistics");
+        stack.add_titled (new Gtk.Grid (), "resources", "Resources");
+        stack.add_titled (new Gtk.Grid (), "css", "CSS");
+        stack.add_titled (new Gtk.Grid (), "visual", "Visual");
+        stack.add_titled (new Gtk.Grid (), "general", "General");
 
         var stack_switcher = new Gtk.StackSwitcher ();
         stack_switcher.stack = stack;

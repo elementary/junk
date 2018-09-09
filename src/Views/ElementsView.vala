@@ -38,7 +38,8 @@ public class ElementsView : Gtk.Paned {
         elements_tree.insert_column_with_attributes (-1, "Style Classes", cell, "text", 3);
 
         var stack = new Gtk.Stack ();
-        stack.add_titled (new Gtk.Grid (), "computed", "Styles");
+        stack.get_style_context ().add_class (Gtk.STYLE_CLASS_VIEW);
+        stack.add_titled (new StylesView (), "styles", "Styles");
         stack.add_titled (new PropertiesView (), "properties", "Properties");
         stack.add_titled (new Gtk.Grid (), "signals", "Signals");
         stack.add_titled (new Gtk.Grid (), "other", "Other");
