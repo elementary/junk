@@ -31,6 +31,80 @@ public class StylesView : Gtk.Grid {
     }
 
     construct {
+        var style_class_label = new Gtk.Label ("<big>window:dir-ltr.background.csd</big>");
+        style_class_label.margin = 6;
+        style_class_label.use_markup = true;
+        style_class_label.xalign = 0;
+        style_class_label.get_style_context ().add_class (Gtk.STYLE_CLASS_DIM_LABEL);
+        style_class_label.get_style_context ().add_class (Gtk.STYLE_CLASS_MONOSPACE);
+
+        var edit_style_class = new Gtk.MenuButton ();
+        edit_style_class.halign = Gtk.Align.END;
+        edit_style_class.image = new Gtk.Image.from_icon_name ("edit-symbolic", Gtk.IconSize.MENU);
+        edit_style_class.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
+
+        var allocation_width = new Gtk.Label (null);
+        var allocation_height = new Gtk.Label (null);
+
+        var allocation_grid = new Gtk.Grid ();
+        allocation_grid.column_spacing = 3;
+        allocation_grid.get_style_context ().add_class ("allocation");
+        allocation_grid.add (allocation_width);
+        allocation_grid.add (new Gtk.Label ("×"));
+        allocation_grid.add (allocation_height);
+
+        var padding_label = new Gtk.Label ("padding");
+        var padding_left = new Gtk.Label ("-");
+        var padding_right = new Gtk.Label ("-");
+
+        var padding_grid = new Gtk.Grid ();
+        padding_grid.get_style_context ().add_class ("padding");
+        padding_grid.attach (padding_label, 0, 0);
+        padding_grid.attach (new Gtk.Label ("-"), 1, 0);
+        padding_grid.attach (padding_left, 0, 1);
+        padding_grid.attach (allocation_grid, 1, 1);
+        padding_grid.attach (padding_right, 2, 1);
+        padding_grid.attach (new Gtk.Label ("-"), 1, 3);
+
+        var border_label = new Gtk.Label ("border");
+        var border_left = new Gtk.Label ("-");
+        var border_right = new Gtk.Label ("-");
+
+        var border_grid = new Gtk.Grid ();
+        border_grid.get_style_context ().add_class ("border");
+        border_grid.attach (border_label, 0, 0);
+        border_grid.attach (new Gtk.Label ("-"), 1, 0);
+        border_grid.attach (border_left, 0, 1);
+        border_grid.attach (padding_grid, 1, 1);
+        border_grid.attach (border_right, 2, 1);
+        border_grid.attach (new Gtk.Label ("-"), 1, 3);
+
+        var margin_label = new Gtk.Label ("margin");
+        var margin_left = new Gtk.Label ("-");
+        var margin_right = new Gtk.Label ("-");
+
+        var margin_grid = new Gtk.Grid ();
+        margin_grid.halign = Gtk.Align.CENTER;
+        margin_grid.margin = 12;
+        margin_grid.get_style_context ().add_class ("margin");
+        margin_grid.attach (margin_label, 0, 0);
+        margin_grid.attach (new Gtk.Label ("-"), 1, 0);
+        margin_grid.attach (margin_left, 0, 1);
+        margin_grid.attach (border_grid, 1, 1);
+        margin_grid.attach (margin_right, 2, 1);
+        margin_grid.attach (new Gtk.Label ("-"), 1, 3);
+
+        var visualizer_size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.HORIZONTAL);
+        visualizer_size_group.add_widget (padding_label);
+        visualizer_size_group.add_widget (padding_left);
+        visualizer_size_group.add_widget (padding_right);
+        visualizer_size_group.add_widget (border_label);
+        visualizer_size_group.add_widget (border_left);
+        visualizer_size_group.add_widget (border_right);
+        visualizer_size_group.add_widget (margin_label);
+        visualizer_size_group.add_widget (margin_left);
+        visualizer_size_group.add_widget (margin_right);
+
         filter_entry = new Gtk.SearchEntry ();
         filter_entry.hexpand = true;
         filter_entry.margin = 6;
@@ -54,9 +128,12 @@ public class StylesView : Gtk.Grid {
         listbox.add (background_image);
         listbox.add (background_origin);
 
-        attach (filter_entry, 0, 0);
-        attach (filter_check, 1, 0);
-        attach (listbox, 0, 1, 2, 1);
+        attach (style_class_label, 0, 0);
+        attach (edit_style_class, 1, 0);
+        attach (margin_grid, 0, 1, 2, 1);
+        attach (filter_entry, 0, 2);
+        attach (filter_check, 1, 2);
+        attach (listbox, 0, 3, 2, 1);
 
         filter_check.toggled.connect (() => {
             listbox.invalidate_filter ();
@@ -64,6 +141,13 @@ public class StylesView : Gtk.Grid {
 
         filter_entry.search_changed.connect (() => {
             listbox.invalidate_filter ();
+        });
+
+        var style_context = get_style_context ();
+
+        draw.connect (() => {
+            allocation_width.label = "%i".printf (get_allocated_width ());
+            allocation_height.label = "%i".printf (get_allocated_height ());
         });
     }
 

@@ -22,8 +22,8 @@ public class MainWindow : Gtk.ApplicationWindow {
         Object (
             application: application,
             title: "Inspector",
-            height_request: 700,
-            width_request: 1024
+            height_request: 100,
+            width_request: 100
         );
     }
 

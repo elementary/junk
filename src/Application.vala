@@ -35,9 +35,16 @@ public class Inspector : Gtk.Application {
         }
 
         main_window = new MainWindow (this);
+        main_window.default_height = 768;
+        main_window.default_width = 1024;
         main_window.show_all ();
 
         var quit_action = new SimpleAction ("quit", null);
+
+        var provider = new Gtk.CssProvider ();
+        provider.load_from_resource ("/org/gtk/inspector/Application.css");
+        Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
 
         add_action (quit_action);
         set_accels_for_action ("app.quit", {"<Control>q"});

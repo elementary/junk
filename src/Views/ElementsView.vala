@@ -21,21 +21,19 @@ public class ElementsView : Gtk.Paned {
     construct {
         Gtk.TreeIter iter;
 
-        var list_store = new Gtk.ListStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
+        var list_store = new Gtk.ListStore (1, typeof (string));
         list_store.append (out iter);
         list_store.set (iter, 0, "GtkSettings");
         list_store.append (out iter);
         list_store.set (iter, 0, "Inspector");
         list_store.append (out iter);
-        list_store.set (iter, 0, "MainWindow", 1, "window", 3, "background, csd");
+        list_store.set (iter, 0, "MainWindow");
 
         var cell = new Gtk.CellRendererText ();
 
         var elements_tree = new Gtk.TreeView.with_model (list_store);
+        elements_tree.headers_visible = false;
         elements_tree.insert_column_with_attributes (-1, "Object", cell, "text", 0);
-        elements_tree.insert_column_with_attributes (-1, "Name", cell, "text", 1);
-        elements_tree.insert_column_with_attributes (-1, "ID", cell, "text", 2);
-        elements_tree.insert_column_with_attributes (-1, "Style Classes", cell, "text", 3);
 
         var stack = new Gtk.Stack ();
         stack.get_style_context ().add_class (Gtk.STYLE_CLASS_VIEW);
