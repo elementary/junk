@@ -5,6 +5,7 @@ executable(
     'src/Application.vala',
     'src/MainWindow.vala',
     'src/Views/ElementsView.vala',
+    'src/Views/PropertiesView.vala',
     dependencies: [
         dependency('glib-2.0'),
         dependency('gobject-2.0'),

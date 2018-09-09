@@ -21,20 +21,25 @@ public class ElementsView : Gtk.Paned {
     construct {
         Gtk.TreeIter iter;
 
-        var list_store = new Gtk.ListStore (3, typeof (string), typeof (string), typeof (string));
+        var list_store = new Gtk.ListStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
         list_store.append (out iter);
-        list_store.set (iter, 0, "Window", 2, "background, csd");
+        list_store.set (iter, 0, "GtkSettings");
+        list_store.append (out iter);
+        list_store.set (iter, 0, "Inspector");
+        list_store.append (out iter);
+        list_store.set (iter, 0, "MainWindow", 1, "window", 3, "background, csd");
 
         var cell = new Gtk.CellRendererText ();
 
         var elements_tree = new Gtk.TreeView.with_model (list_store);
-        elements_tree.insert_column_with_attributes (-1, "Name", cell, "text", 0);
-        elements_tree.insert_column_with_attributes (-1, "ID", cell, "text", 1);
-        elements_tree.insert_column_with_attributes (-1, "Style Classes", cell, "text", 2);
+        elements_tree.insert_column_with_attributes (-1, "Object", cell, "text", 0);
+        elements_tree.insert_column_with_attributes (-1, "Name", cell, "text", 1);
+        elements_tree.insert_column_with_attributes (-1, "ID", cell, "text", 2);
+        elements_tree.insert_column_with_attributes (-1, "Style Classes", cell, "text", 3);
 
         var stack = new Gtk.Stack ();
         stack.add_titled (new Gtk.Grid (), "computed", "Styles");
-        stack.add_titled (new Gtk.Grid (), "properties", "Properties");
+        stack.add_titled (new PropertiesView (), "properties", "Properties");
         stack.add_titled (new Gtk.Grid (), "signals", "Signals");
         stack.add_titled (new Gtk.Grid (), "other", "Other");
 
@@ -47,6 +52,7 @@ public class ElementsView : Gtk.Paned {
         var grid = new Gtk.Grid ();
         grid.orientation = Gtk.Orientation.VERTICAL;
         grid.add (stack_switcher);
+        grid.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
         grid.add (stack);
 
         add1 (elements_tree);

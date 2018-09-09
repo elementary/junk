@@ -31,10 +31,8 @@ public class MainWindow : Gtk.ApplicationWindow {
         var select_object = new Gtk.Button.from_icon_name ("find-location-symbolic");
         select_object.tooltip_markup = "Select an element \n<span size='small' alpha='60%'>Ctrl + Shift + I</span>";
 
-        var elements_view = new ElementsView ();
-
         var stack = new Gtk.Stack ();
-        stack.add_titled (elements_view, "elements_view", "Elements");
+        stack.add_titled (new ElementsView (), "objects", "Objects");
 
         var stack_switcher = new Gtk.StackSwitcher ();
         stack_switcher.stack = stack;
