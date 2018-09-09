@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2017 Daniel Foré (http://danielfore.com)
+* Copyright (c) 2018 elementary, Inc. (https://elementary.io)
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public
@@ -28,6 +28,24 @@ public class MainWindow : Gtk.ApplicationWindow {
     }
 
     construct {
+        var select_object = new Gtk.Button.from_icon_name ("find-location-symbolic");
+        select_object.tooltip_markup = "Select an element \n<span size='small' alpha='60%'>Ctrl + Shift + I</span>";
 
+        var elements_view = new ElementsView ();
+
+        var stack = new Gtk.Stack ();
+        stack.add_titled (elements_view, "elements_view", "Elements");
+
+        var stack_switcher = new Gtk.StackSwitcher ();
+        stack_switcher.stack = stack;
+
+        var headerbar = new Gtk.HeaderBar ();
+        headerbar.custom_title = stack_switcher;
+        headerbar.show_close_button = true;
+        headerbar.add (select_object);
+
+        set_titlebar (headerbar);
+        add (stack);
+        show_all ();
     }
 }

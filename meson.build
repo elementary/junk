@@ -4,6 +4,7 @@ executable(
     meson.project_name(),
     'src/Application.vala',
     'src/MainWindow.vala',
+    'src/Views/ElementsView.vala',
     dependencies: [
         dependency('glib-2.0'),
         dependency('gobject-2.0'),
